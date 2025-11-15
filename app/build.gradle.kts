@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.androidx.compose.foundation.layout)
     implementation(libs.androidx.ink.geometry)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.compose.runtime.livedata)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -62,8 +63,14 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
-    // 🔥 Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
+// Adicione estas linhas dentro do seu bloco 'dependencies { ... }'
+
+    // Firebase BoM (Bill of Materials) - Gere todas as versões do Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
+
+    // Biblioteca do Firestore KTX (que fornece o 'Firebase.firestore')
     implementation("com.google.firebase:firebase-firestore-ktx")
-    implementation("com.google.firebase:firebase-database-ktx")
+
+    // Necessário para usar o '.await()' nas chamadas do Firebase (como o 'repository' faz)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
 }

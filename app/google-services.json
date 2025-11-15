@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "12356218145",
-    "project_id": "transgato-e373e",
-    "storage_bucket": "transgato-e373e.firebasestorage.app"
+    "project_number": "687272273200",
+    "project_id": "transgato-app",
+    "storage_bucket": "transgato-app.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:12356218145:android:53a4d60f6fa73f8b5ce260",
+        "mobilesdk_app_id": "1:687272273200:android:9f9595c489760f3ee114f5",
         "android_client_info": {
           "package_name": "com.example.uce"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBruraGTKR38IbQmZMMjGfbHFDUW9vTRTI"
+          "current_key": "AIzaSyBxTb-fEdY2Z9nsx8cFAmd4_Z6-bxWl81Q"
         }
       ],
       "services": {
