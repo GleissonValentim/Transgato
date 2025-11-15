@@ -5,14 +5,26 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.composables.AppNavigation
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+
+
+
+import com.example.uce.navegation.Destinos
 import com.example.uce.ui.theme.UCETheme
+import com.example.uce.view.TelaAddManutencao
+import com.example.uce.view.TelaCaminhoneiro
+import com.example.uce.view.TelaDoAdm
+import com.example.uce.view.telaLogin
+import com.example.uce.viewmodel.MainViewModel
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,7 +32,51 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             UCETheme {
-                AppNavigation()
+                Transgato()
+            }
+        }
+    }
+}
+
+@Composable
+fun Transgato() {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        val navController = rememberNavController()
+        val mainViewModel : MainViewModel = viewModel()
+
+        NavHost(
+            navController = navController,
+            startDestination = Destinos.telaLogin.rota
+        ) {
+            composable(Destinos.telaLogin.rota) {
+                telaLogin(
+                    navController = navController,
+                    viewModel = mainViewModel
+                )
+            }
+
+            composable(Destinos.telaMotorista.rota) {
+                TelaCaminhoneiro(
+                    navController = navController,
+                    viewModel = mainViewModel
+                )
+            }
+
+            composable(Destinos.telaProprietario.rota) {
+                    TelaDoAdm(
+                    navController = navController,
+                    viewModel = mainViewModel
+                )
+            }
+
+            composable(Destinos.telaAddManutencao.rota) {
+                TelaAddManutencao(
+                    navController = navController,
+                    viewModel = mainViewModel
+                )
             }
         }
     }
@@ -30,6 +86,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview() {
     UCETheme {
-        AppNavigation()
+        Transgato()
     }
 }
