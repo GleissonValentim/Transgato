@@ -1,34 +1,13 @@
-package com.example.prova_3
+package com.example.uce.view
 
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,15 +20,39 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.uce.model.Manutencao
 import com.example.uce.navegation.Destinos
 import com.example.uce.ui.theme.Principal
-import com.example.uce.viewmodel.ManutencaoViewModel
+import com.example.uce.ui.theme.UCETheme
+import com.example.uce.viewmodel.MainViewModel
+import java.text.NumberFormat
+import java.util.Locale
 
 @Composable
-fun telaAdm(navController: NavController, viewModel: ManutencaoViewModel = viewModel()) {
-    Box(modifier = Modifier.fillMaxSize()) {
+fun TelaDoAdm(
+    navController: NavController,
+    viewModel: MainViewModel = viewModel()
+) {
 
+    val manutencoes by viewModel.listaDeManutencoes.collectAsState()
+    val caminhoneiros by viewModel.listaDeCaminhoneiros.collectAsState()
+    val context = LocalContext.current
+
+    // Carrega as manutenções do Firebase
+    LaunchedEffect(key1 = Unit) {
+        viewModel.carregarTodosCaminhoneiros()
+    }
+
+    // Observa mensagens de status
+    LaunchedEffect(key1 = Unit) {
+        viewModel.statusMessage.collect { message ->
+            if (message != null) {
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                viewModel.onStatusMessageShown()
+            }
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
         Column (
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -58,8 +61,7 @@ fun telaAdm(navController: NavController, viewModel: ManutencaoViewModel = viewM
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Principal)
-                    .padding(top = 25.dp)
-                    .padding(bottom = 25.dp),
+                    .padding(vertical = 25.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -85,11 +87,9 @@ fun telaAdm(navController: NavController, viewModel: ManutencaoViewModel = viewM
 
             Spacer(modifier = Modifier.height(25.dp))
 
-            val manutencoes = viewModel.manutencoes
-
-            if (manutencoes.isEmpty()) {
+            if (caminhoneiros.isEmpty()) {
                 Text(
-                    text = "Não há manutenções no momento",
+                    text = "Não há caminhoneiros cadastrados no momento",
                     style = TextStyle(
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
@@ -97,9 +97,11 @@ fun telaAdm(navController: NavController, viewModel: ManutencaoViewModel = viewM
                 )
             } else {
                 LazyColumn(
+                    // Ocupa o espaço disponível, menos o espaço do botão "Sair"
+                    modifier = Modifier.padding(bottom = 80.dp),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
                 ) {
-                    items(manutencoes) { manutencao ->
+                    items(caminhoneiros) { cam ->
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -109,28 +111,23 @@ fun telaAdm(navController: NavController, viewModel: ManutencaoViewModel = viewM
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Text(
-                                    text = manutencao.tipo,
+                                    text = cam.nome,
                                     style = TextStyle(
                                         fontSize = 19.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = Color.DarkGray
                                     )
                                 )
-
-                                Spacer(modifier = Modifier.height(10.dp))
-
+                                Spacer(modifier = Modifier.height(4.dp))
                                 Text(
-                                    text = manutencao.descricao,
-                                )
-
-                                Spacer(modifier = Modifier.height(5.dp))
-
-                                Text(
-                                    text = "Motorista: Gleisson",
+                                    text = cam.cpf,
                                     style = TextStyle(
-                                        fontSize = 14.sp,
+                                        fontSize = 16.sp,
+                                        color = Color.Gray
                                     )
                                 )
+
+                                Spacer(modifier = Modifier.height(10.dp))
                             }
                         }
                     }
@@ -138,27 +135,27 @@ fun telaAdm(navController: NavController, viewModel: ManutencaoViewModel = viewM
             }
         }
 
+        // Rodapé com o botão "Sair"
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 820.dp)
+                .padding(bottom = 16.dp), // Alinha o botão Sair na parte inferior
+            contentAlignment = Alignment.BottomCenter
         ) {
-            Column(
+            Button(
+                onClick = {
+                    viewModel.resetLoginState()
+                    navController.navigate(Destinos.telaLogin.rota) {
+                        // Limpa a pilha de navegação
+                        popUpTo(Destinos.telaLogin.rota) { inclusive = true }
+                    }
+                },
+                shape = RoundedCornerShape(4.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Principal)
-                    .padding(top = 8.dp, bottom = 25.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(horizontal = 50.dp) // Adiciona padding horizontal
             ) {
-                Button(
-                    onClick = { navController.navigate(Destinos.telaLogin.rota) },
-                    shape = RoundedCornerShape(4.dp),
-                    modifier = Modifier
-                        .padding(top = 20.dp, start = 250.dp)
-                ) {
-                    Text("Sair")
-                }
+                Text("Sair")
             }
         }
     }
@@ -167,6 +164,8 @@ fun telaAdm(navController: NavController, viewModel: ManutencaoViewModel = viewM
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun TelaAdmPreview() {
-    val navController = rememberNavController()
-    telaAdm(navController = navController)
+    UCETheme {
+        val navController = rememberNavController()
+        TelaDoAdm(navController = navController) // <-- CORREÇÃO: Nome da função no Preview
+    }
 }
