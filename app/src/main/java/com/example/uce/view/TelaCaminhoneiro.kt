@@ -2,7 +2,6 @@ package com.example.uce.view
 
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,39 +17,48 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.uce.model.Manutencao
 import com.example.uce.navegation.Destinos
 import com.example.uce.ui.theme.Principal
-import com.example.uce.viewmodel.ManutencaoViewModel
-import java.security.Principal
+import com.example.uce.viewmodel.MainViewModel
+import java.text.NumberFormat
+import java.util.Locale
 
 @Composable
-fun telaCaminhoneiro(navController: NavController, viewModel: ManutencaoViewModel = viewModel()) {
-    Box(modifier = Modifier.fillMaxSize()) {
+fun TelaCaminhoneiro(
+    navController: NavController,
+    viewModel: MainViewModel = viewModel()
+) {
+    // CORREÇÃO: Observa a lista de manutenções
+    val manutencoes by viewModel.listaDeManutencoes.collectAsState()
+    val context = LocalContext.current
 
+    // Observa mensagens de status
+    LaunchedEffect(key1 = Unit) {
+        viewModel.statusMessage.collect { message ->
+            if (message != null) {
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                viewModel.onStatusMessageShown()
+            }
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -85,7 +93,9 @@ fun telaCaminhoneiro(navController: NavController, viewModel: ManutencaoViewMode
             )
 
             Button(
-                onClick = { navController.navigate(Destinos.telaAddManutencao.rota) },
+                onClick = {
+                    navController.navigate(Destinos.telaAddManutencao.rota)
+                },
                 shape = RoundedCornerShape(4.dp),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -99,8 +109,6 @@ fun telaCaminhoneiro(navController: NavController, viewModel: ManutencaoViewMode
             }
 
             Spacer(modifier = Modifier.height(25.dp))
-
-            val manutencoes = viewModel.manutencoes
 
             if (manutencoes.isEmpty()) {
                 Text(
@@ -132,44 +140,45 @@ fun telaCaminhoneiro(navController: NavController, viewModel: ManutencaoViewMode
                                         color = Color.DarkGray
                                     )
                                 )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = manutencao.descricao,
+                                    style = TextStyle(
+                                        fontSize = 16.sp,
+                                        color = Color.Gray
+                                    )
+                                )
                                 Spacer(modifier = Modifier.height(10.dp))
-                                Text(manutencao.descricao)
+                                val formatoMoeda =
+                                    NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
+                                val custoFormatado = formatoMoeda.format(manutencao.custo)
+                                Text("Custo: $custoFormatado")
                             }
                         }
                     }
                 }
             }
         }
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 820.dp)
+                .padding(bottom = 16.dp),
+            contentAlignment = Alignment.BottomCenter
         ) {
-            Column(
+            Button(
+                onClick = {
+                    viewModel.resetLoginState() // Limpa o login
+                    navController.navigate(Destinos.telaLogin.rota) {
+                        popUpTo(Destinos.telaLogin.rota) { inclusive = true }
+                    }
+                },
+                shape = RoundedCornerShape(4.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Principal)
-                    .padding(top = 8.dp, bottom = 25.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(horizontal = 50.dp)
             ) {
-                Button(
-                    onClick = { navController.navigate(Destinos.telaLogin.rota) },
-                    shape = RoundedCornerShape(4.dp),
-                    modifier = Modifier
-                        .padding(top = 20.dp, start = 250.dp)
-                ) {
-                    Text("Sair")
-                }
+                Text("Sair")
             }
         }
     }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun TelaCaminhoneiroPreview() {
-    val navController = rememberNavController()
-    telaCaminhoneiro(navController = navController)
 }

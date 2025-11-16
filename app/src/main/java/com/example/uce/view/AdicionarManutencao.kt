@@ -5,26 +5,21 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -34,33 +29,53 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.uce.model.Manutencao
-import com.example.uce.navegation.Destinos
+// Imports corrigidos
 import com.example.uce.ui.theme.Principal
-import com.example.uce.viewmodel.ManutencaoViewModel
+import com.example.uce.viewmodel.MainViewModel
+import java.util.Locale
 
 @Composable
-fun TelaAddManutencao(navController: NavController, viewModel: ManutencaoViewModel = viewModel()) {
+fun TelaAddManutencao(
+    navController: NavController,
+    viewModel: MainViewModel = viewModel() // ViewModel correto
+) {
+    val context = LocalContext.current
+    val caminhao by viewModel.caminhaoDoUsuario.collectAsState()
+
+    LaunchedEffect(key1 = Unit) {
+        viewModel.statusMessage.collect { message ->
+            if (message != null) {
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                viewModel.onStatusMessageShown()
+                if (message.contains("sucesso")) {
+                    navController.popBackStack()
+                }
+            }
+        }
+    }
+
+    var descricao by remember { mutableStateOf("") }
+    var custo by remember { mutableStateOf("") }
+    var tipo by remember { mutableStateOf("") }
+
     Box(modifier = Modifier.fillMaxSize()) {
-        Column (
+        Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
-        ){
-            Column (
+        ) {
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Principal)
-                    .padding(top = 25.dp)
-                    .padding(bottom = 25.dp),
+                    .background(Principal) // Cor do tema
+                    .padding(vertical = 25.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
-            ){
+            ) {
                 Text(
                     text = "Menu do motorista",
                     style = TextStyle(
@@ -81,19 +96,6 @@ fun TelaAddManutencao(navController: NavController, viewModel: ManutencaoViewMod
                 )
             )
 
-            val context = LocalContext.current
-
-            val toastMessage by viewModel.toastMessage.observeAsState()
-
-            LaunchedEffect(toastMessage) {
-                toastMessage?.let { message ->
-                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            var tipo by remember { mutableStateOf("") }
-            var descricao by remember { mutableStateOf("") }
-
             Column(modifier = Modifier.padding(16.dp)) {
                 OutlinedTextField(
                     value = tipo,
@@ -105,27 +107,38 @@ fun TelaAddManutencao(navController: NavController, viewModel: ManutencaoViewMod
                 OutlinedTextField(
                     value = descricao,
                     onValueChange = { descricao = it },
-                    label = { Text("Descrição") },
+                    label = { Text("Descrição do serviço") },
                     modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                OutlinedTextField(
+                    value = custo,
+                    onValueChange = { custo = it },
+                    label = { Text("Custo") },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Button(
                     onClick = {
-                        viewModel.updateTipo(tipo)
-                        viewModel.updateDescricao(descricao)
-                        val mensagem = viewModel.adicionarNovaManutencao()
+                        val custoDouble = custo.toDoubleOrNull() ?: 0.0
 
-                        if (mensagem.startsWith("Preencha todos os campos para adicionar a manutenção")) {
-                            Toast.makeText(context, mensagem, Toast.LENGTH_SHORT).show()
+                        if (tipo.isNotBlank() && descricao.isNotBlank() && custoDouble > 0) {
+                            // Apenas chama o ViewModel. Ele já sabe o ID do caminhão
+                            // e o nome do motorista.
+                            viewModel.salvarManutencao(
+                                tipo = tipo,
+                                descricao = descricao,
+                                custo = custoDouble
+                            )
                         } else {
-                            Toast.makeText(context, mensagem, Toast.LENGTH_SHORT).show()
-                            navController.navigate(Destinos.telaMotorista.rota)
+                            Toast.makeText(context, "Preencha todos os campos.", Toast.LENGTH_SHORT).show()
                         }
+                        // ------------------------
                     },
                     shape = RoundedCornerShape(4.dp),
-                    modifier = Modifier
-                        .padding(top = 5.dp, start = 270.dp),
+                    modifier = Modifier.align(Alignment.End),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Principal
                     )
@@ -133,63 +146,22 @@ fun TelaAddManutencao(navController: NavController, viewModel: ManutencaoViewMod
                     Text("Adicionar")
                 }
             }
-
-            Spacer(modifier = Modifier.height(25.dp))
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 550.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Principal)
-                        .padding(top = 8.dp, bottom = 25.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Button(
-                        onClick = { navController.popBackStack() },
-                        shape = RoundedCornerShape(4.dp),
-                        modifier = Modifier
-                            .padding(top = 20.dp, start = 250.dp)
-                    ) {
-                        Text("Voltar")
-                    }
-                }
-            }
-        }
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 820.dp)
-        ) {
-            Column(
+            Button(
+                onClick = {
+                    navController.popBackStack() // Ação de voltar
+                },
+                shape = RoundedCornerShape(4.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Principal)
-                    .padding(top = 8.dp, bottom = 25.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(horizontal = 50.dp), // Para não colar nas laterais
+                // (Opcional) Usar cores secundárias para "Voltar"
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Gray,
+                    contentColor = Color.White
+                )
             ) {
-                Button(
-                    onClick = { navController.popBackStack() },
-                    shape = RoundedCornerShape(4.dp),
-                    modifier = Modifier
-                        .padding(top = 20.dp, start = 250.dp)
-                ) {
-                    Text("Voltar")
-                }
+                Text("Voltar")
             }
         }
     }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun TelaAddManutencaoPreview() {
-    val navController = rememberNavController()
-    TelaAddManutencao(navController = navController)
 }
