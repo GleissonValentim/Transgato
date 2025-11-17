@@ -44,11 +44,10 @@ fun TelaCaminhoneiro(
     navController: NavController,
     viewModel: MainViewModel = viewModel()
 ) {
-    // CORREÇÃO: Observa a lista de manutenções
+
     val manutencoes by viewModel.listaDeManutencoes.collectAsState()
     val context = LocalContext.current
 
-    // Observa mensagens de status
     LaunchedEffect(key1 = Unit) {
         viewModel.statusMessage.collect { message ->
             if (message != null) {

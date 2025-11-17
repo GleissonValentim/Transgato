@@ -5,5 +5,5 @@ data class Caminhao(
     val placa: String = "",
     val modelo: String = "",
     val ano: Int = 0,
-    val caminhoneiroId: String = "" // FK para Caminhoneiro
+    val caminhoneiroId: String = ""
 )

@@ -46,29 +46,21 @@ import com.example.uce.viewmodel.MainViewModel
 @Composable
 fun telaLogin(
     navController: NavController,
-    viewModel: MainViewModel = viewModel() // Usa o MainViewModel
+    viewModel: MainViewModel = viewModel()
 ) {
-    // Observa o estado do login
     val loginState by viewModel.loginResult.collectAsState()
     val context = LocalContext.current
 
-    // Reage às mudanças de estado do login
     LaunchedEffect(loginState) {
         when (val state = loginState) {
             is LoginResult.Success -> {
-                // Sucesso, navega para a tela correta
                 Toast.makeText(context, "Bem-vindo, ${state.usuario.nome}!", Toast.LENGTH_SHORT).show()
 
-                // LÓGICA DE NAVEGAÇÃO CORRIGIDA
-                // Verifica o 'tipo' do usuário, não o 'id'
                 if (state.usuario.tipo == "admin") {
-                    // Se for admin, vai para a tela do proprietário
                     navController.navigate(Destinos.telaProprietario.rota) {
-                        // Limpa a pilha de navegação para que o usuário não possa "voltar" para o login
                         popUpTo(Destinos.telaLogin.rota) { inclusive = true }
                     }
                 } else {
-                    // Se for motorista, vai para a tela do motorista
                     navController.navigate(Destinos.telaMotorista.rota) {
                         popUpTo(Destinos.telaLogin.rota) { inclusive = true }
                     }
@@ -76,28 +68,27 @@ fun telaLogin(
 
             }
             is LoginResult.Error -> {
-                // Exibe a mensagem de erro vinda do ViewModel
                 Toast.makeText(context, state.mensagem, Toast.LENGTH_LONG).show()
-                viewModel.resetLoginState() // Reseta
+                viewModel.resetLoginState()
             }
-            // Não faz nada em Idle ou Loading (a UI cuida do Loading)
+
             else -> Unit
         }
     }
 
     Column(
         modifier = Modifier
-            .fillMaxSize() // Preenche a tela inteira
+            .fillMaxSize()
             .background(Principal)
             .padding(top = 100.dp),
-        verticalArrangement = Arrangement.Top, // Alinha ao topo
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
             painter = painterResource(id = R.drawable.logo),
             contentDescription = "Logo do app",
             modifier = Modifier
-                .width(200.dp) // Diminuí um pouco o logo
+                .width(200.dp)
                 .height(200.dp)
                 .padding(bottom = 30.dp),
         )
@@ -110,14 +101,14 @@ fun telaLogin(
                 .padding(16.dp)
         ){
             var cpf by remember { mutableStateOf("") }
-            var id by remember { mutableStateOf("") } // Mantemos o campo 'id', embora não seja mais obrigatório
+            var id by remember { mutableStateOf("") }
 
             OutlinedTextField(
                 value = cpf,
                 onValueChange = { cpf = it },
-                label = { Text("Digite o seu CPF") }, // Texto corrigido
+                label = { Text("Digite o seu CPF") },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = loginState != LoginResult.Loading // Desativa se estiver carregando
+                enabled = loginState != LoginResult.Loading
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -125,24 +116,21 @@ fun telaLogin(
             OutlinedTextField(
                 value = id,
                 onValueChange = { id = it },
-                label = { Text("Digite o seu ID") }, // Texto corrigido
+                label = { Text("Digite o seu ID") },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = loginState != LoginResult.Loading // Desativa se estiver carregando
+                enabled = loginState != LoginResult.Loading
             )
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // LÓGICA DO BOTÃO CORRIGIDA
             Button(
                 onClick = {
-                    // Apenas chama a função do ViewModel.
-                    // O LaunchedEffect vai cuidar da navegação/toast.
                     viewModel.fazerLogin(cpf, id)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp), // Define uma altura padrão
-                enabled = loginState != LoginResult.Loading // Desativa o botão se estiver carregando
+                    .height(50.dp),
+                enabled = loginState != LoginResult.Loading
             ) {
                 if (loginState == LoginResult.Loading) {
                     CircularProgressIndicator(color = Color.White)

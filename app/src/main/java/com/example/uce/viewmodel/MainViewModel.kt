@@ -18,36 +18,32 @@ sealed class LoginResult {
 }
 
 class MainViewModel : ViewModel() {
-
     private val repository = TransportadoraRepository()
 
-
     private val _loginResult = MutableStateFlow<LoginResult>(LoginResult.Idle)
+
     val loginResult: StateFlow<LoginResult> = _loginResult
 
-
     private val _usuarioLogado = MutableStateFlow<Caminhoneiro?>(null)
+
     val usuarioLogado: StateFlow<Caminhoneiro?> = _usuarioLogado
 
     private val _caminhaoDoUsuario = MutableStateFlow<Caminhao?>(null)
+
     val caminhaoDoUsuario: StateFlow<Caminhao?> = _caminhaoDoUsuario
 
-
     private val _listaDeManutencoes = MutableStateFlow<List<Manutencao>>(emptyList())
-    val listaDeManutencoes: StateFlow<List<Manutencao>> = _listaDeManutencoes
 
+    val listaDeManutencoes: StateFlow<List<Manutencao>> = _listaDeManutencoes
 
     private val _listaDeCaminhoneiros = MutableStateFlow<List<Caminhoneiro>>(emptyList())
 
     val listaDeCaminhoneiros : StateFlow<List<Caminhoneiro>> = _listaDeCaminhoneiros
 
-
     private val _statusMessage = MutableStateFlow<String?>(null)
+
     val statusMessage: StateFlow<String?> = _statusMessage
 
-    /**
-     * Tenta fazer o login buscando um usuário pelo CPF no Firebase.
-     */
     fun fazerLogin(cpf: String, id: String) {
         viewModelScope.launch {
             _loginResult.value = LoginResult.Loading
@@ -56,10 +52,20 @@ class MainViewModel : ViewModel() {
                 return@launch
             }
 
+            if (id.isBlank()) {
+                _loginResult.value = LoginResult.Error("Por favor, preencha o ID.")
+                return@launch
+            }
+
             val result = repository.getCaminhoneiroPorCpf(cpf)
             result.onSuccess { caminhoneiro ->
                 if (caminhoneiro != null) {
-                    // CORREÇÃO: Guarda o usuário no StateFlow
+
+                    if (caminhoneiro.id != id) {
+                        _loginResult.value = LoginResult.Error("ID ou CPF incorretos. Por favor, tente novamente.")
+                        return@onSuccess
+                    }
+
                     _usuarioLogado.value = caminhoneiro
                     _loginResult.value = LoginResult.Success(caminhoneiro)
 
@@ -75,19 +81,13 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Reseta o estado de login para Idle (usado ao sair da tela, por ex).
-     */
     fun resetLoginState() {
         _loginResult.value = LoginResult.Idle
-        _usuarioLogado.value = null // CORREÇÃO: Limpa o StateFlow
+        _usuarioLogado.value = null
         _caminhaoDoUsuario.value = null
         _listaDeManutencoes.value = emptyList()
     }
 
-    /**
-     * (PRIVADO) Busca o caminhão E DEPOIS as manutenções (Lógica encadeada).
-     */
     private fun buscarCaminhaoEManutencoes(caminhoneiroId: String) {
         viewModelScope.launch {
             val resultCaminhao = repository.getCaminhaoPorCaminhoneiroId(caminhoneiroId)
@@ -107,7 +107,6 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    // Esta função é chamada pela TelaDoAdm
     fun carregarTodasManutencoes() {
         viewModelScope.launch {
             val result = repository.getAllManutencoes()
@@ -129,8 +128,6 @@ class MainViewModel : ViewModel() {
         }
     }
 
-
-    // Função helper privada para carregar manutenções
     private fun carregarManutencoes(caminhaoId: String) {
         viewModelScope.launch {
             val result = repository.getManutencoesPorCaminhaoId(caminhaoId)
@@ -142,12 +139,9 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    /**
-     * (Público) Recarrega as manutenções do motorista logado.
-     */
     fun carregarManutencoesDoCaminhaoLogado() {
         val caminhaoId = _caminhaoDoUsuario.value?.id
-        val userId = _usuarioLogado.value?.id // CORREÇÃO: Lê do StateFlow
+        val userId = _usuarioLogado.value?.id
 
         if (caminhaoId != null && caminhaoId.isNotBlank()) {
             carregarManutencoes(caminhaoId)
@@ -156,9 +150,6 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Cria um novo registro de manutenção e o salva no Firebase.
-     */
     fun salvarManutencao(tipo: String, descricao: String, custo: Double) {
         viewModelScope.launch {
 
@@ -166,15 +157,13 @@ class MainViewModel : ViewModel() {
 
             val nomeMotoristaAtual = _usuarioLogado.value?.nome
 
-
             if (caminhaoIdAtual == null || caminhaoIdAtual.isBlank()) {
                 _statusMessage.value = "A confirmar dados do caminhão..."
-                val userId = _usuarioLogado.value?.id // CORREÇÃO: Lê do StateFlow
+                val userId = _usuarioLogado.value?.id
                 if (userId == null) {
                     _statusMessage.value = "Erro fatal: Usuário desapareceu."
                     return@launch
                 }
-
 
                 val result = repository.getCaminhaoPorCaminhoneiroId(userId)
                 if (result.isSuccess) {
@@ -186,7 +175,6 @@ class MainViewModel : ViewModel() {
                     return@launch
                 }
             }
-
 
             if (caminhaoIdAtual == null || caminhaoIdAtual.isBlank() || nomeMotoristaAtual == null) {
                 _statusMessage.value = "Erro: Não foi possível identificar o caminhão ou motorista."
@@ -201,6 +189,7 @@ class MainViewModel : ViewModel() {
                 custo = custo,
                 caminhoneiroNome = nomeMotoristaAtual
             )
+
             val result = repository.addManutencao(novaManutencao)
             result.onSuccess {
                 _statusMessage.value = "Manutenção registrada com sucesso!"
@@ -211,7 +200,6 @@ class MainViewModel : ViewModel() {
             }
         }
     }
-
 
     fun onStatusMessageShown() {
         _statusMessage.value = null

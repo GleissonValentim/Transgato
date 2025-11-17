@@ -37,12 +37,10 @@ fun TelaDoAdm(
     val caminhoneiros by viewModel.listaDeCaminhoneiros.collectAsState()
     val context = LocalContext.current
 
-    // Carrega as manutenções do Firebase
     LaunchedEffect(key1 = Unit) {
         viewModel.carregarTodosCaminhoneiros()
     }
 
-    // Observa mensagens de status
     LaunchedEffect(key1 = Unit) {
         viewModel.statusMessage.collect { message ->
             if (message != null) {
@@ -97,7 +95,6 @@ fun TelaDoAdm(
                 )
             } else {
                 LazyColumn(
-                    // Ocupa o espaço disponível, menos o espaço do botão "Sair"
                     modifier = Modifier.padding(bottom = 80.dp),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
                 ) {
@@ -135,25 +132,23 @@ fun TelaDoAdm(
             }
         }
 
-        // Rodapé com o botão "Sair"
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 16.dp), // Alinha o botão Sair na parte inferior
+                .padding(bottom = 16.dp),
             contentAlignment = Alignment.BottomCenter
         ) {
             Button(
                 onClick = {
                     viewModel.resetLoginState()
                     navController.navigate(Destinos.telaLogin.rota) {
-                        // Limpa a pilha de navegação
                         popUpTo(Destinos.telaLogin.rota) { inclusive = true }
                     }
                 },
                 shape = RoundedCornerShape(4.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 50.dp) // Adiciona padding horizontal
+                    .padding(horizontal = 50.dp)
             ) {
                 Text("Sair")
             }
@@ -166,6 +161,6 @@ fun TelaDoAdm(
 fun TelaAdmPreview() {
     UCETheme {
         val navController = rememberNavController()
-        TelaDoAdm(navController = navController) // <-- CORREÇÃO: Nome da função no Preview
+        TelaDoAdm(navController = navController)
     }
 }

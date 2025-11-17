@@ -5,6 +5,6 @@ data class Caminhoneiro(
     val nome: String = "",
     val cpf: String = "",
     val cnh: String = "",
-    val tipo : String = "Motorista" // ou adm
+    val tipo : String = "Motorista"
 )
 

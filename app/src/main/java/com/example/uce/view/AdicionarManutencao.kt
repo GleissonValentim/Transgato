@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.uce.navegation.Destinos
 // Imports corrigidos
 import com.example.uce.ui.theme.Principal
 import com.example.uce.viewmodel.MainViewModel
@@ -42,7 +43,7 @@ import java.util.Locale
 @Composable
 fun TelaAddManutencao(
     navController: NavController,
-    viewModel: MainViewModel = viewModel() // ViewModel correto
+    viewModel: MainViewModel = viewModel()
 ) {
     val context = LocalContext.current
     val caminhao by viewModel.caminhaoDoUsuario.collectAsState()
@@ -71,7 +72,7 @@ fun TelaAddManutencao(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Principal) // Cor do tema
+                    .background(Principal)
                     .padding(vertical = 25.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -125,8 +126,6 @@ fun TelaAddManutencao(
                         val custoDouble = custo.toDoubleOrNull() ?: 0.0
 
                         if (tipo.isNotBlank() && descricao.isNotBlank() && custoDouble > 0) {
-                            // Apenas chama o ViewModel. Ele já sabe o ID do caminhão
-                            // e o nome do motorista.
                             viewModel.salvarManutencao(
                                 tipo = tipo,
                                 descricao = descricao,
@@ -135,7 +134,6 @@ fun TelaAddManutencao(
                         } else {
                             Toast.makeText(context, "Preencha todos os campos.", Toast.LENGTH_SHORT).show()
                         }
-                        // ------------------------
                     },
                     shape = RoundedCornerShape(4.dp),
                     modifier = Modifier.align(Alignment.End),
@@ -146,21 +144,24 @@ fun TelaAddManutencao(
                     Text("Adicionar")
                 }
             }
-            Button(
-                onClick = {
-                    navController.popBackStack() // Ação de voltar
-                },
-                shape = RoundedCornerShape(4.dp),
+
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 50.dp), // Para não colar nas laterais
-                // (Opcional) Usar cores secundárias para "Voltar"
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Gray,
-                    contentColor = Color.White
-                )
+                    .fillMaxSize()
+                    .padding(bottom = 16.dp),
+                contentAlignment = Alignment.BottomCenter
             ) {
-                Text("Voltar")
+                Button(
+                    onClick = {
+                        navController.popBackStack()
+                    },
+                    shape = RoundedCornerShape(4.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 50.dp)
+                ) {
+                    Text("Voltar")
+                }
             }
         }
     }
