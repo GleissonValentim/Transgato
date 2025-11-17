@@ -11,3 +11,15 @@ Seu objetivo é facilitar a comunicação e melhorar a organização dos process
 
 - Kotlin
 - Android Studio
+
+Autenticação
+Observação: o CPF está definido como admin porque, por enquanto, trata-se apenas de um teste. O valor foi inserido diretamente no Firebase para a criação da conta.
+
+admin
+0101
+
+123
+1
+
+321
+2
