@@ -61,7 +61,7 @@ fun telaLogin(
                         popUpTo(Destinos.telaLogin.rota) { inclusive = true }
                     }
                 } else {
-                    navController.navigate(Destinos.telaMotorista.rota) {
+                    navController.navigate(Destinos.telaInicialMotorista.rota) {
                         popUpTo(Destinos.telaLogin.rota) { inclusive = true }
                     }
                 }

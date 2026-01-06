@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.androidx.ink.geometry)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.compose.runtime.livedata)
+    implementation(libs.androidx.ui.text)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
