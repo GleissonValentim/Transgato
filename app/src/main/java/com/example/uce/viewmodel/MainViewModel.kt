@@ -3,6 +3,7 @@ package com.example.uce.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.uce.data.TransportadoraRepository
+import com.example.uce.model.Aviso
 import com.example.uce.model.Caminhao
 import com.example.uce.model.Caminhoneiro
 import com.example.uce.model.Manutencao
@@ -207,5 +208,18 @@ class MainViewModel : ViewModel() {
 
     fun listarCaminhoneiros(){
 
+    }
+
+
+    //parte da tela inicial caminhoneiro
+    private val _listaDeAvisos = MutableStateFlow<List<Aviso>>(emptyList())
+    val listaDeAvisos: StateFlow<List<Aviso>> = _listaDeAvisos
+
+    fun carregarAvisos(){
+        viewModelScope.launch {
+            val result = repository.getTodosAvisos()
+            result.onSuccess { lista -> _listaDeAvisos.value = lista }
+                    .onFailure { e -> _statusMessage.value = "Erro ao carregar: ${e.message}" }
+        }
     }
 }

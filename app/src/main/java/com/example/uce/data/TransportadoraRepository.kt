@@ -1,6 +1,7 @@
 package com.example.uce.data
 
 
+import com.example.uce.model.Aviso
 import com.example.uce.model.Caminhao
 import com.example.uce.model.Caminhoneiro
 import com.example.uce.model.Manutencao
@@ -8,6 +9,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
+import kotlin.text.get
 
 class TransportadoraRepository{
 
@@ -15,6 +17,8 @@ class TransportadoraRepository{
     private val colecaoCaminhoneiros = db.collection("caminhoneiros")
     private val colecaoCaminhoes = db.collection("caminhoes")
     private val colecaoManutencoes = db.collection("manutencoes")
+
+    private val colecaoAvisos = db.collection("avisos")
 
     suspend fun addCaminhoneiro(caminhoneiro: Caminhoneiro): Result<Unit> {
         return try {
@@ -114,6 +118,16 @@ class TransportadoraRepository{
                 .await()
             val manutencoes = snapshot.toObjects(Manutencao::class.java)
             Result.success(manutencoes)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getTodosAvisos(): Result<List<Aviso>>{
+        return try{
+            val snapshot = colecaoAvisos.get().await()
+            val listaDeAvisos = snapshot.toObjects(Aviso::class.java)
+            Result.success(listaDeAvisos)
         } catch (e: Exception) {
             Result.failure(e)
         }
