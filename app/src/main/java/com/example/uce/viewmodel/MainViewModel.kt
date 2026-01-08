@@ -8,7 +8,10 @@ import com.example.uce.model.Caminhao
 import com.example.uce.model.Caminhoneiro
 import com.example.uce.model.Manutencao
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 sealed class LoginResult {
@@ -222,4 +225,8 @@ class MainViewModel : ViewModel() {
                     .onFailure { e -> _statusMessage.value = "Erro ao carregar: ${e.message}" }
         }
     }
+
+    val avisoRecente: StateFlow<Aviso?> = _listaDeAvisos
+        .map { it.lastOrNull() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 }

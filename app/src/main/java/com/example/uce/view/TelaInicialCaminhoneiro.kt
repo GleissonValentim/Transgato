@@ -24,10 +24,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -38,15 +42,19 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.example.uce.navegation.Destinos
 import com.example.uce.ui.theme.UCETheme
+import com.example.uce.viewmodel.MainViewModel
 
 @Composable
-fun TelaInicialCaminhoneiro(navController: NavController, viewModel: ViewModel) {
+fun TelaInicialCaminhoneiro(navController: NavController, viewModel: MainViewModel) {
+    LaunchedEffect(Unit) {
+        viewModel.carregarAvisos()
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFF2F2F2)) // Fundo cinza claro
     ) {
-        // --- Cabeçalho Azul ---
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -72,17 +80,21 @@ fun TelaInicialCaminhoneiro(navController: NavController, viewModel: ViewModel) 
             Spacer(modifier = Modifier.height(16.dp))
 
             //avisos
-            AvisosCard()
+                AvisosCard(viewModel)
 
             Spacer(modifier = Modifier.height(16.dp))
 
             //botões do Menu
             //fazer a tela de cada um e colocar aqui depois
-            MenuItem(label = "Manutenções do veículo", onClick = {navController.navigate(Destinos.telaMotorista.rota)})
-            MenuItem(label = "Mensagem para Proprietário", onClick = {navController.navigate(Destinos.telaMotorista.rota)})
-            MenuItem(label = "Mensagem para Funcionários", onClick = {navController.navigate(Destinos.telaMotorista.rota)})
-            MenuItem(label = "Caixa de Mensagens", onClick = {navController.navigate(Destinos.telaMotorista.rota)})
-            MenuItem(label = "Informações", onClick = {navController.navigate(Destinos.telaMotorista.rota)})
+            //falta a parte de mensagem
+            Column (modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+                MenuItem(label = "Manutenções do veículo", onClick = {navController.navigate(Destinos.telaManutencao.rota)})
+                MenuItem(label = "Mensagem para Proprietário", onClick = {navController.navigate(Destinos.telaManutencao.rota)})
+                MenuItem(label = "Mensagem para Funcionários", onClick = {navController.navigate(Destinos.telaManutencao.rota)})
+                MenuItem(label = "Caixa de Mensagens", onClick = {navController.navigate(Destinos.telaManutencao.rota)})
+                MenuItem(label = "Informações", onClick = {navController.navigate(Destinos.telaInformacoes.rota)})
+            }
+
 
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -95,7 +107,10 @@ fun TelaInicialCaminhoneiro(navController: NavController, viewModel: ViewModel) 
             contentAlignment = Alignment.CenterEnd
         ) {
             Button(
-                onClick = { /* colocar para sair */ },
+                onClick = { /* colocar para sair */
+                viewModel.resetLoginState()
+                navController.navigate(Destinos.telaLogin.rota)
+                          },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD31C1C)),
                 shape = RoundedCornerShape(8.dp)
             ) {
@@ -106,7 +121,9 @@ fun TelaInicialCaminhoneiro(navController: NavController, viewModel: ViewModel) 
 }
 
 @Composable
-fun AvisosCard() {
+fun AvisosCard(viwModel: MainViewModel) {
+    val ultimoAviso by viwModel.avisoRecente.collectAsState()
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
@@ -118,9 +135,27 @@ fun AvisosCard() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text("Avisos", color = Color.Red, fontSize = 24.sp, fontWeight = FontWeight.ExtraBold, fontStyle = FontStyle.Italic)
+            Text("Avisos", color = Color.Red, fontSize = 24.sp, fontWeight = FontWeight.ExtraBold, fontStyle = FontStyle.Italic,
+                textAlign = TextAlign.Center)
+
             Spacer(modifier = Modifier.height(12.dp))
-            Text(text = "Algum aviso que vai vir ainda")
+
+            Card (modifier = Modifier.fillMaxWidth()
+                .padding(16.dp, 8.dp),
+                shape = RoundedCornerShape(15.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White)) {
+                Row (modifier = Modifier.fillMaxWidth().padding(10.dp),
+                    verticalAlignment = Alignment.CenterVertically)
+                {
+                    Text(text = ultimoAviso?.tituloAviso?: "Não há avisos",
+                        style = TextStyle(
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
+                        ))
+                }
+            }
+
             Spacer(modifier = Modifier.height(12.dp))
 
             Button(
@@ -162,17 +197,5 @@ fun MenuItem(label: String, onClick: () -> Unit) {
                 color = Color(0xFF10182D)
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun verTela(){
-    UCETheme {
-        val fakeNavController = androidx.navigation.compose.rememberNavController()
-        TelaInicialCaminhoneiro(
-            navController = fakeNavController,
-            viewModel = androidx.lifecycle.viewmodel.compose.viewModel()
-        )
     }
 }

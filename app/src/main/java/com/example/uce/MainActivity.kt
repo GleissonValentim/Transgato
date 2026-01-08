@@ -21,9 +21,9 @@ import com.example.uce.navegation.Destinos
 import com.example.uce.ui.theme.UCETheme
 import com.example.uce.view.Informacoes
 import com.example.uce.view.TelaAddManutencao
-import com.example.uce.view.TelaCaminhoneiro
 import com.example.uce.view.TelaDoAdm
 import com.example.uce.view.TelaInicialCaminhoneiro
+import com.example.uce.view.TelaManutencao
 import com.example.uce.view.telaLogin
 import com.example.uce.viewmodel.MainViewModel
 
@@ -60,8 +60,8 @@ fun Transgato() {
                 )
             }
 
-            composable(Destinos.telaMotorista.rota) {
-                TelaCaminhoneiro(
+            composable(Destinos.telaManutencao.rota) {
+                TelaManutencao(
                     navController = navController,
                     viewModel = mainViewModel
                 )

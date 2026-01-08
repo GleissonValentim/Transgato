@@ -6,6 +6,7 @@ import com.example.uce.model.Caminhao
 import com.example.uce.model.Caminhoneiro
 import com.example.uce.model.Manutencao
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
@@ -125,7 +126,7 @@ class TransportadoraRepository{
 
     suspend fun getTodosAvisos(): Result<List<Aviso>>{
         return try{
-            val snapshot = colecaoAvisos.get().await()
+            val snapshot = colecaoAvisos.orderBy("data", Query.Direction.ASCENDING).get().await()
             val listaDeAvisos = snapshot.toObjects(Aviso::class.java)
             Result.success(listaDeAvisos)
         } catch (e: Exception) {

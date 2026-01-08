@@ -1,7 +1,7 @@
 package com.example.uce.navegation;
 
 sealed class Destinos(val rota: String) {
-    object telaMotorista : Destinos("tela_do_motorista")
+    object telaManutencao : Destinos("tela_de_manutencao")
     object telaProprietario : Destinos("tela_do_proprietario")
     object telaAddManutencao : Destinos("tela_de_adicionar_manutencao")
     object telaLogin : Destinos("tela_de_login")

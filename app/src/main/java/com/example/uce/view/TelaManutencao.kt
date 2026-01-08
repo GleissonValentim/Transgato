@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.uce.model.Manutencao
 import com.example.uce.navegation.Destinos
 import com.example.uce.ui.theme.Principal
 import com.example.uce.viewmodel.MainViewModel
@@ -40,7 +39,7 @@ import java.text.NumberFormat
 import java.util.Locale
 
 @Composable
-fun TelaCaminhoneiro(
+fun TelaManutencao(
     navController: NavController,
     viewModel: MainViewModel = viewModel()
 ) {
@@ -166,9 +165,9 @@ fun TelaCaminhoneiro(
         ) {
             Button(
                 onClick = {
-                    viewModel.resetLoginState() // Limpa o login
-                    navController.navigate(Destinos.telaLogin.rota) {
-                        popUpTo(Destinos.telaLogin.rota) { inclusive = true }
+                   // viewModel.resetLoginState() // Limpa o login
+                    navController.navigate(Destinos.telaInicialMotorista.rota) {
+                        popUpTo(Destinos.telaInicialMotorista.rota) { inclusive = true }
                     }
                 },
                 shape = RoundedCornerShape(4.dp),
