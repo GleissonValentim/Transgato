@@ -24,6 +24,7 @@ import com.example.uce.view.TelaAddManutencao
 import com.example.uce.view.TelaDoAdm
 import com.example.uce.view.TelaInicialCaminhoneiro
 import com.example.uce.view.TelaManutencao
+import com.example.uce.view.TelaTodosAvisos
 import com.example.uce.view.telaLogin
 import com.example.uce.viewmodel.MainViewModel
 
@@ -90,6 +91,13 @@ fun Transgato() {
 
             composable(Destinos.telaAddManutencao.rota) {
                 TelaAddManutencao(
+                    navController = navController,
+                    viewModel = mainViewModel
+                )
+            }
+
+            composable (Destinos.telaTodosAvisos.rota) {
+                TelaTodosAvisos(
                     navController = navController,
                     viewModel = mainViewModel
                 )

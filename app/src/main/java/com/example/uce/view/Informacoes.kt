@@ -61,7 +61,7 @@ fun Informacoes(navController: NavController, viewModel: ViewModel){
                     color = Color.White,
                     fontSize = 20.sp,
                     modifier = Modifier.clickable{
-                        navController.navigate(Destinos.telaInicialMotorista.rota)
+                        navController.popBackStack()
                     }
                 )
                 Text(
@@ -86,7 +86,6 @@ fun Informacoes(navController: NavController, viewModel: ViewModel){
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // --- Card Branco com a Lista de Dicas ---
             Card(
                 modifier = Modifier
                     .fillMaxWidth()

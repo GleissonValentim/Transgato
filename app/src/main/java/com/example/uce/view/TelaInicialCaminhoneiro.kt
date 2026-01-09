@@ -53,8 +53,7 @@ fun TelaInicialCaminhoneiro(navController: NavController, viewModel: MainViewMod
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
             .background(Color(0xFFF2F2F2)) // Fundo cinza claro
     ) {
         Box(
@@ -82,7 +81,7 @@ fun TelaInicialCaminhoneiro(navController: NavController, viewModel: MainViewMod
             Spacer(modifier = Modifier.height(16.dp))
 
             //avisos
-                AvisosCard(viewModel)
+                AvisosCard(navController, viewModel)
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -123,7 +122,7 @@ fun TelaInicialCaminhoneiro(navController: NavController, viewModel: MainViewMod
 }
 
 @Composable
-fun AvisosCard(viewModel: MainViewModel) {
+fun AvisosCard(navController: NavController, viewModel: MainViewModel) {
     val ultimoAviso by viewModel.avisoRecente.collectAsState()
 
     Card(
@@ -147,37 +146,26 @@ fun AvisosCard(viewModel: MainViewModel) {
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Card (modifier = Modifier.fillMaxWidth()
-                .padding(16.dp, 8.dp),
-                shape = RoundedCornerShape(15.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)) {
-                Column(modifier = Modifier.padding(10.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally)
-                {
-                    Text(text = ultimoAviso?.tituloAviso?: "Não há avisos",
-                        style = TextStyle(
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center
-                        ))
-
-                    Spacer(modifier = Modifier.height(8.dp))
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = ultimoAviso?.tituloAviso ?: "Sem título",
+                        style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 17.sp)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
 
                     val formatado = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-                    Text(text = ultimoAviso?.data?.let { horaCerta -> formatado.format(horaCerta) }?:"data Indisponivel",
+                    Text(
+                        text = ultimoAviso?.data?.let { horaCerta -> formatado.format(horaCerta) } ?: "data Indisponivel",
                         modifier = Modifier.fillMaxWidth(),
-                        style = TextStyle(
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Normal,
-                            textAlign = TextAlign.End
-                        ))
+                        textAlign = TextAlign.End,
+                        style = TextStyle(fontSize = 12.sp, color = Color.Gray)
+                    )
                 }
-            }
 
             Spacer(modifier = Modifier.height(12.dp))
 
             Button(
-                onClick = { },
+                onClick = { navController.navigate(Destinos.telaTodosAvisos.rota) },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF10182D)),
                 shape = RoundedCornerShape(50)
             ) {
