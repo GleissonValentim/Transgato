@@ -43,6 +43,8 @@ import androidx.navigation.NavController
 import com.example.uce.navegation.Destinos
 import com.example.uce.ui.theme.UCETheme
 import com.example.uce.viewmodel.MainViewModel
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @Composable
 fun TelaInicialCaminhoneiro(navController: NavController, viewModel: MainViewModel) {
@@ -121,8 +123,8 @@ fun TelaInicialCaminhoneiro(navController: NavController, viewModel: MainViewMod
 }
 
 @Composable
-fun AvisosCard(viwModel: MainViewModel) {
-    val ultimoAviso by viwModel.avisoRecente.collectAsState()
+fun AvisosCard(viewModel: MainViewModel) {
+    val ultimoAviso by viewModel.avisoRecente.collectAsState()
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -135,8 +137,13 @@ fun AvisosCard(viwModel: MainViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text("Avisos", color = Color.Red, fontSize = 24.sp, fontWeight = FontWeight.ExtraBold, fontStyle = FontStyle.Italic,
+            Text("Avisos", style = TextStyle(
+                color = Color.Red,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.ExtraBold,
+                fontStyle = FontStyle.Italic,
                 textAlign = TextAlign.Center)
+            )
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -144,14 +151,25 @@ fun AvisosCard(viwModel: MainViewModel) {
                 .padding(16.dp, 8.dp),
                 shape = RoundedCornerShape(15.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White)) {
-                Row (modifier = Modifier.fillMaxWidth().padding(10.dp),
-                    verticalAlignment = Alignment.CenterVertically)
+                Column(modifier = Modifier.padding(10.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally)
                 {
                     Text(text = ultimoAviso?.tituloAviso?: "Não há avisos",
                         style = TextStyle(
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center
+                        ))
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    val formatado = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                    Text(text = ultimoAviso?.data?.let { horaCerta -> formatado.format(horaCerta) }?:"data Indisponivel",
+                        modifier = Modifier.fillMaxWidth(),
+                        style = TextStyle(
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Normal,
+                            textAlign = TextAlign.End
                         ))
                 }
             }
