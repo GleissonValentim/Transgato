@@ -9,4 +9,6 @@ sealed class Destinos(val rota: String) {
     object telaInformacoes : Destinos("tela_informacoes")
 
     object telaTodosAvisos : Destinos("tela_todos_avisos")
+
+    object telaManutencaoADM : Destinos("tela_manutencao_adm")
 }

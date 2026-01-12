@@ -1,8 +1,10 @@
-package com.example.uce.view
+package com.example.uce.view.TelasAdm
 
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -99,32 +101,57 @@ fun TelaDoAdm(
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
                 ) {
                     items(caminhoneiros) { cam ->
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 12.dp),
-                            elevation = CardDefaults.cardElevation(4.dp),
-                            shape = RoundedCornerShape(12.dp)
-                        ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                Text(
-                                    text = cam.nome,
-                                    style = TextStyle(
-                                        fontSize = 19.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color.DarkGray
-                                    )
-                                )
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Text(
-                                    text = cam.cpf,
-                                    style = TextStyle(
-                                        fontSize = 16.sp,
-                                        color = Color.Gray
-                                    )
-                                )
+                        if (cam.cpf != "admin") {
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 12.dp),
+                                elevation = CardDefaults.cardElevation(4.dp),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = cam.nome,
+                                            style = TextStyle(
+                                                fontSize = 19.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = Color.DarkGray
+                                            )
+                                        )
+                                        Spacer(modifier = Modifier.height(4.dp))
+                                        Text(
+                                            text = cam.cpf,
+                                            style = TextStyle(
+                                                fontSize = 16.sp,
+                                                color = Color.Gray
+                                            )
+                                        )
 
-                                Spacer(modifier = Modifier.height(10.dp))
+                                        Spacer(modifier = Modifier.height(10.dp))
+                                    }
+                                    Column {
+                                        Button(
+                                            onClick = {
+                                                viewModel.carregarManutencaoEscolhida(cam)
+                                                navController.navigate(Destinos.telaManutencaoADM.rota)
+                                            },
+                                            shape = RoundedCornerShape(8.dp),
+                                            border = BorderStroke(
+                                                1.dp,
+                                                Color(0x363636)
+                                            ),//borda cinza
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = Color.Transparent, //fundo transparente
+                                                contentColor = Color(0xFF7FB0CF) //cor azul do texto
+                                            )
+                                        ) { Text(text = "Verificar manutenções") }
+                                    }
+                                }
                             }
                         }
                     }

@@ -1,4 +1,4 @@
-package com.example.uce.view
+package com.example.uce.view.TelasMotorista
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -34,11 +34,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.uce.navegation.Destinos
 // Imports corrigidos
 import com.example.uce.ui.theme.Principal
 import com.example.uce.viewmodel.MainViewModel
-import java.util.Locale
 
 @Composable
 fun TelaAddManutencao(

@@ -20,11 +20,12 @@ import androidx.navigation.compose.rememberNavController
 import com.example.uce.navegation.Destinos
 import com.example.uce.ui.theme.UCETheme
 import com.example.uce.view.Informacoes
-import com.example.uce.view.TelaAddManutencao
-import com.example.uce.view.TelaDoAdm
-import com.example.uce.view.TelaInicialCaminhoneiro
-import com.example.uce.view.TelaManutencao
-import com.example.uce.view.TelaTodosAvisos
+import com.example.uce.view.TelasMotorista.TelaAddManutencao
+import com.example.uce.view.TelasAdm.TelaDoAdm
+import com.example.uce.view.TelasAdm.TelaManutencaoEscolhida
+import com.example.uce.view.TelasMotorista.TelaInicialCaminhoneiro
+import com.example.uce.view.TelasMotorista.TelaManutencao
+import com.example.uce.view.TelasMotorista.TelaTodosAvisos
 import com.example.uce.view.telaLogin
 import com.example.uce.viewmodel.MainViewModel
 
@@ -98,6 +99,13 @@ fun Transgato() {
 
             composable (Destinos.telaTodosAvisos.rota) {
                 TelaTodosAvisos(
+                    navController = navController,
+                    viewModel = mainViewModel
+                )
+            }
+
+            composable (Destinos.telaManutencaoADM.rota) {
+                TelaManutencaoEscolhida(
                     navController = navController,
                     viewModel = mainViewModel
                 )

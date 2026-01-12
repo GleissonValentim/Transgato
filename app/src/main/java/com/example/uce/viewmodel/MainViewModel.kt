@@ -48,6 +48,9 @@ class MainViewModel : ViewModel() {
 
     val statusMessage: StateFlow<String?> = _statusMessage
 
+    private val _motoristaSelecionado = MutableStateFlow<Caminhoneiro?>(null)
+    val motoristaSelecionado: StateFlow<Caminhoneiro?> = _motoristaSelecionado
+
     fun fazerLogin(cpf: String, id: String) {
         viewModelScope.launch {
             _loginResult.value = LoginResult.Loading
@@ -107,17 +110,6 @@ class MainViewModel : ViewModel() {
                 }
             }.onFailure { e ->
                 _statusMessage.value = "Erro ao buscar caminhão: ${e.message}"
-            }
-        }
-    }
-
-    fun carregarTodasManutencoes() {
-        viewModelScope.launch {
-            val result = repository.getAllManutencoes()
-            result.onSuccess { lista ->
-                _listaDeManutencoes.value = lista
-            }.onFailure { e ->
-                _statusMessage.value = "Erro ao carregar manutenções: ${e.message}"
             }
         }
     }
@@ -229,4 +221,25 @@ class MainViewModel : ViewModel() {
     val avisoRecente: StateFlow<Aviso?> = _listaDeAvisos
         .map { it.lastOrNull() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
+
+
+    //parte da tela do adm
+
+    fun carregarManutencaoEscolhida(motorista : Caminhoneiro){
+        _motoristaSelecionado.value = motorista
+        _listaDeManutencoes.value = emptyList()
+
+        viewModelScope.launch {
+            val resultadoBusca = repository.getCaminhaoPorCaminhoneiroId(motorista.id)
+
+            resultadoBusca.onSuccess { caminhao ->
+                if(caminhao != null){
+                    carregarManutencoes(caminhao.id)
+                }else{
+                    _statusMessage.value = "Motorista não tem caminhão"
+                }
+            }
+        }
+    }
 }

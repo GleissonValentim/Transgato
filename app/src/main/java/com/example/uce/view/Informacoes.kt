@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
-import com.example.uce.navegation.Destinos
 
 @Composable
 fun Informacoes(navController: NavController, viewModel: ViewModel){

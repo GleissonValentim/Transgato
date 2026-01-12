@@ -1,4 +1,4 @@
-package com.example.uce.view
+package com.example.uce.view.TelasMotorista
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
