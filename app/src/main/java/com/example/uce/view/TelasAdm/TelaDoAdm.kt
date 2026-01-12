@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -51,27 +52,25 @@ fun TelaDoAdm(
             }
         }
     }
-
-    Box(modifier = Modifier.fillMaxSize()) {
         Column (
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Principal)
-                    .padding(vertical = 25.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .background(Color(0xFF10182D))
+                    .padding(vertical = 24.dp),
+                contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = "Menu do proprietario",
                     style = TextStyle(
+                        color = Color.White,
+                        fontSize = 28.sp,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 24.sp,
-                    ),
-                    color = Color.White
+                        fontStyle = FontStyle.Italic
+                    )
                 )
             }
 
@@ -125,9 +124,9 @@ fun TelaDoAdm(
                                         )
                                         Spacer(modifier = Modifier.height(4.dp))
                                         Text(
-                                            text = cam.cpf,
+                                            text = "CPF: ${cam.cpf}",
                                             style = TextStyle(
-                                                fontSize = 16.sp,
+                                                fontSize = 15.sp,
                                                 color = Color.Gray
                                             )
                                         )
@@ -143,11 +142,10 @@ fun TelaDoAdm(
                                             shape = RoundedCornerShape(8.dp),
                                             border = BorderStroke(
                                                 1.dp,
-                                                Color(0x363636)
-                                            ),//borda cinza
+                                                Color(0xFF5F849B)),
                                             colors = ButtonDefaults.buttonColors(
                                                 containerColor = Color.Transparent, //fundo transparente
-                                                contentColor = Color(0xFF7FB0CF) //cor azul do texto
+                                                contentColor = Color(0xFF5F849B) //cor azul do texto
                                             )
                                         ) { Text(text = "Verificar manutenções") }
                                     }
@@ -180,7 +178,6 @@ fun TelaDoAdm(
                 Text("Sair")
             }
         }
-    }
 }
 
 @Preview(showBackground = true, showSystemUi = true)

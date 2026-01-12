@@ -108,7 +108,7 @@ fun TelaInicialCaminhoneiro(navController: NavController, viewModel: MainViewMod
             contentAlignment = Alignment.CenterEnd
         ) {
             Button(
-                onClick = { /* colocar para sair */
+                onClick = {
                 viewModel.resetLoginState()
                 navController.navigate(Destinos.telaLogin.rota)
                           },

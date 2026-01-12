@@ -22,6 +22,7 @@ import com.example.uce.ui.theme.UCETheme
 import com.example.uce.view.Informacoes
 import com.example.uce.view.TelasMotorista.TelaAddManutencao
 import com.example.uce.view.TelasAdm.TelaDoAdm
+import com.example.uce.view.TelasAdm.TelaGerarAviso
 import com.example.uce.view.TelasAdm.TelaManutencaoEscolhida
 import com.example.uce.view.TelasMotorista.TelaInicialCaminhoneiro
 import com.example.uce.view.TelasMotorista.TelaManutencao
@@ -53,7 +54,7 @@ fun Transgato() {
 
         NavHost(
             navController = navController,
-            startDestination = Destinos.telaLogin.rota
+            startDestination = Destinos.telaGerarAviso.rota
         ) {
             composable(Destinos.telaLogin.rota) {
                 telaLogin(
@@ -107,6 +108,12 @@ fun Transgato() {
             composable (Destinos.telaManutencaoADM.rota) {
                 TelaManutencaoEscolhida(
                     navController = navController,
+                    viewModel = mainViewModel
+                )
+            }
+
+            composable (Destinos.telaGerarAviso.rota) {
+                TelaGerarAviso(navController = navController,
                     viewModel = mainViewModel
                 )
             }

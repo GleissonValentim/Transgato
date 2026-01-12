@@ -1,5 +1,6 @@
 package com.example.uce.viewmodel
 
+import android.R
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.uce.data.TransportadoraRepository
@@ -201,11 +202,6 @@ class MainViewModel : ViewModel() {
         _statusMessage.value = null
     }
 
-    fun listarCaminhoneiros(){
-
-    }
-
-
     //parte da tela inicial caminhoneiro
     private val _listaDeAvisos = MutableStateFlow<List<Aviso>>(emptyList())
     val listaDeAvisos: StateFlow<List<Aviso>> = _listaDeAvisos
@@ -215,6 +211,22 @@ class MainViewModel : ViewModel() {
             val result = repository.getTodosAvisos()
             result.onSuccess { lista -> _listaDeAvisos.value = lista }
                     .onFailure { e -> _statusMessage.value = "Erro ao carregar: ${e.message}" }
+        }
+    }
+
+    fun salvarAviso(data: Long, texto: String, titulo: String){
+        viewModelScope.launch {
+            val novoAviso = Aviso(
+                data = data,
+                textoAviso = texto,
+                tituloAviso = titulo
+            )
+            repository.addAviso(novoAviso)
+                .onSuccess { carregarAvisos()
+                _statusMessage.value = "Aviso adicionado a lista"}
+                .onFailure { exception ->
+                    _statusMessage.value = exception.message
+                }
         }
     }
 

@@ -133,4 +133,14 @@ class TransportadoraRepository{
             Result.failure(e)
         }
     }
+
+    suspend fun addAviso(aviso: Aviso): Result<Unit>{
+        return try{
+            val novoAviso = colecaoAvisos.add(aviso).await()
+            novoAviso.update("id", novoAviso.id).await()
+            Result.success(Unit)
+        }catch (e: Exception){
+            Result.failure(e)
+        }
+    }
 }
