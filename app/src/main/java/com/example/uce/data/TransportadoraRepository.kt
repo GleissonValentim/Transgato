@@ -6,6 +6,7 @@ import com.example.uce.model.Caminhao
 import com.example.uce.model.Caminhoneiro
 import com.example.uce.model.Manutencao
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -142,5 +143,20 @@ class TransportadoraRepository{
         }catch (e: Exception){
             Result.failure(e)
         }
+    }
+
+    // Note que agora a função retorna um ListenerRegistration
+    fun getAvisoMaisRecente(onResult: (Aviso?) -> Unit): ListenerRegistration {
+        return colecaoAvisos
+            .orderBy("data", Query.Direction.DESCENDING)
+            .limit(1)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    onResult(null)
+                    return@addSnapshotListener
+                }
+                val aviso = snapshot?.documents?.firstOrNull()?.toObject(Aviso::class.java)
+                onResult(aviso)
+            }
     }
 }

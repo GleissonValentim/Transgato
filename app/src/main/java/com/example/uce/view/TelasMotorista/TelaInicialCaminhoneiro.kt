@@ -41,7 +41,7 @@ import java.util.Locale
 @Composable
 fun TelaInicialCaminhoneiro(navController: NavController, viewModel: MainViewModel) {
     LaunchedEffect(Unit) {
-        viewModel.carregarAvisos()
+        viewModel.carregarAvisoRecente()
     }
 
     Column(

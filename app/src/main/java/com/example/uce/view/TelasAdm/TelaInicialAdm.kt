@@ -65,7 +65,7 @@ fun TelaIncialAdm(viewModel: MainViewModel, navController: NavController){
             //falta a parte de mensagem
             Column (modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
                 MenuItemAdm(label = "Checar manutenções", onClick = {navController.navigate(Destinos.telaManutencaoAdm.rota)})
-                MenuItemAdm(label = "Gerenciar Avisos", onClick = {navController.navigate(Destinos.telaGerarAviso.rota)})
+                MenuItemAdm(label = "Gerenciar Avisos", onClick = {navController.navigate(Destinos.telaGerenciarAvisos.rota)})
                 MenuItemAdm(label = "Editar informações", onClick = {navController.navigate(Destinos.telaInformacoes.rota)})
                 MenuItemAdm(label = "Gerenciar Funcionarios", onClick = {Toast.makeText(context, "Funcionalidade ainda não existe", Toast.LENGTH_SHORT).show()})
                 MenuItemAdm(label = "Mensagens", onClick = {Toast.makeText(context, "Funcionalidade ainda não existe", Toast.LENGTH_SHORT).show()})

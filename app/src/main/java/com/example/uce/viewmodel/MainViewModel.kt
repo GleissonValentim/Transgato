@@ -8,6 +8,7 @@ import com.example.uce.model.Aviso
 import com.example.uce.model.Caminhao
 import com.example.uce.model.Caminhoneiro
 import com.example.uce.model.Manutencao
+import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -43,7 +44,7 @@ class MainViewModel : ViewModel() {
 
     private val _listaDeCaminhoneiros = MutableStateFlow<List<Caminhoneiro>>(emptyList())
 
-    val listaDeCaminhoneiros : StateFlow<List<Caminhoneiro>> = _listaDeCaminhoneiros
+    val listaDeCaminhoneiros: StateFlow<List<Caminhoneiro>> = _listaDeCaminhoneiros
 
     private val _carregandoCaminhoneiros = MutableStateFlow(false)
     val carregandoCaminhoneiros: StateFlow<Boolean> = _carregandoCaminhoneiros
@@ -73,7 +74,8 @@ class MainViewModel : ViewModel() {
                 if (caminhoneiro != null) {
 
                     if (caminhoneiro.id != id) {
-                        _loginResult.value = LoginResult.Error("ID ou CPF incorretos. Por favor, tente novamente.")
+                        _loginResult.value =
+                            LoginResult.Error("ID ou CPF incorretos. Por favor, tente novamente.")
                         return@onSuccess
                     }
 
@@ -118,7 +120,7 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun carregarTodosCaminhoneiros(){
+    fun carregarTodosCaminhoneiros() {
         viewModelScope.launch {
             _carregandoCaminhoneiros.value = true
             val result = repository.getAllCaminhoneiros()
@@ -126,7 +128,7 @@ class MainViewModel : ViewModel() {
                 _listaDeCaminhoneiros.value = lista
                 _carregandoCaminhoneiros.value = false
             }.onFailure { e ->
-                    _statusMessage.value = "Erro ao carregar caminhoneiros ${e.message}"
+                _statusMessage.value = "Erro ao carregar caminhoneiros ${e.message}"
             }
         }
     }
@@ -212,52 +214,68 @@ class MainViewModel : ViewModel() {
     private val _listaDeAvisos = MutableStateFlow<List<Aviso>>(emptyList())
     val listaDeAvisos: StateFlow<List<Aviso>> = _listaDeAvisos
 
-    fun carregarAvisos(){
+    private val _avisoRecente = MutableStateFlow<Aviso?>(null)
+    val avisoRecente: StateFlow<Aviso?> = _avisoRecente
+
+    private var avisoListener: ListenerRegistration? = null
+
+    fun carregarAvisos() {
         viewModelScope.launch {
             val result = repository.getTodosAvisos()
             result.onSuccess { lista -> _listaDeAvisos.value = lista }
-                    .onFailure { e -> _statusMessage.value = "Erro ao carregar: ${e.message}" }
+                .onFailure { e -> _statusMessage.value = "Erro ao carregar: ${e.message}" }
         }
     }
 
-    fun salvarAviso(data: Long, texto: String, titulo: String){
-        viewModelScope.launch {
-            val novoAviso = Aviso(
-                data = data,
-                textoAviso = texto,
-                tituloAviso = titulo
-            )
-            repository.addAviso(novoAviso)
-                .onSuccess { carregarAvisos()
-                _statusMessage.value = "Aviso adicionado a lista"}
-                .onFailure { exception ->
-                    _statusMessage.value = exception.message
-                }
+    fun carregarAvisoRecente() {
+        avisoListener?.remove()
+
+        avisoListener = repository.getAvisoMaisRecente { aviso ->
+            _avisoRecente.value = aviso
         }
+
     }
 
-    val avisoRecente: StateFlow<Aviso?> = _listaDeAvisos
-        .map { it.lastOrNull() }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+    override fun onCleared() {
+        super.onCleared()
+        avisoListener?.remove()
+    }
+
+        fun salvarAviso(data: Long, texto: String, titulo: String) {
+            viewModelScope.launch {
+                val novoAviso = Aviso(
+                    data = data,
+                    textoAviso = texto,
+                    tituloAviso = titulo
+                )
+                repository.addAviso(novoAviso)
+                    .onSuccess {
+                        carregarAvisos()
+                        _statusMessage.value = "Aviso adicionado a lista"
+                    }
+                    .onFailure { exception ->
+                        _statusMessage.value = exception.message
+                    }
+            }
+        }
 
 
+        //parte da tela do adm
 
-    //parte da tela do adm
+        fun carregarManutencaoEscolhida(motorista: Caminhoneiro) {
+            _motoristaSelecionado.value = motorista
+            _listaDeManutencoes.value = emptyList()
 
-    fun carregarManutencaoEscolhida(motorista : Caminhoneiro){
-        _motoristaSelecionado.value = motorista
-        _listaDeManutencoes.value = emptyList()
+            viewModelScope.launch {
+                val resultadoBusca = repository.getCaminhaoPorCaminhoneiroId(motorista.id)
 
-        viewModelScope.launch {
-            val resultadoBusca = repository.getCaminhaoPorCaminhoneiroId(motorista.id)
-
-            resultadoBusca.onSuccess { caminhao ->
-                if(caminhao != null){
-                    carregarManutencoes(caminhao.id)
-                }else{
-                    _statusMessage.value = "Motorista não tem caminhão"
+                resultadoBusca.onSuccess { caminhao ->
+                    if (caminhao != null) {
+                        carregarManutencoes(caminhao.id)
+                    } else {
+                        _statusMessage.value = "Motorista não tem caminhão"
+                    }
                 }
             }
         }
     }
-}

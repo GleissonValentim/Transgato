@@ -23,6 +23,7 @@ import com.example.uce.view.Informacoes
 import com.example.uce.view.TelasMotorista.TelaAddManutencao
 import com.example.uce.view.TelasAdm.TelaManutencaoAdm
 import com.example.uce.view.TelasAdm.TelaGerarAviso
+import com.example.uce.view.TelasAdm.TelaGerenciarAvisos
 import com.example.uce.view.TelasAdm.TelaIncialAdm
 import com.example.uce.view.TelasAdm.TelaManutencaoEscolhida
 import com.example.uce.view.TelasMotorista.TelaInicialCaminhoneiro
@@ -119,6 +120,13 @@ fun Transgato() {
 
             composable(Destinos.telaManutencaoAdm.rota) {
                 TelaManutencaoAdm(
+                    navController = navController,
+                    viewModel = mainViewModel
+                )
+            }
+
+            composable (Destinos.telaGerenciarAvisos.rota) {
+                TelaGerenciarAvisos(
                     navController = navController,
                     viewModel = mainViewModel
                 )
