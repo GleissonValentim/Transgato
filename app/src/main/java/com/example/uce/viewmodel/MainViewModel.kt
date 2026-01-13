@@ -45,6 +45,9 @@ class MainViewModel : ViewModel() {
 
     val listaDeCaminhoneiros : StateFlow<List<Caminhoneiro>> = _listaDeCaminhoneiros
 
+    private val _carregandoCaminhoneiros = MutableStateFlow(false)
+    val carregandoCaminhoneiros: StateFlow<Boolean> = _carregandoCaminhoneiros
+
     private val _statusMessage = MutableStateFlow<String?>(null)
 
     val statusMessage: StateFlow<String?> = _statusMessage
@@ -117,9 +120,12 @@ class MainViewModel : ViewModel() {
 
     fun carregarTodosCaminhoneiros(){
         viewModelScope.launch {
+            _carregandoCaminhoneiros.value = true
             val result = repository.getAllCaminhoneiros()
             result.onSuccess { lista ->
-                _listaDeCaminhoneiros.value = lista }.onFailure { e ->
+                _listaDeCaminhoneiros.value = lista
+                _carregandoCaminhoneiros.value = false
+            }.onFailure { e ->
                     _statusMessage.value = "Erro ao carregar caminhoneiros ${e.message}"
             }
         }

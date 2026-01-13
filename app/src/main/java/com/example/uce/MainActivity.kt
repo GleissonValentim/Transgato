@@ -21,8 +21,9 @@ import com.example.uce.navegation.Destinos
 import com.example.uce.ui.theme.UCETheme
 import com.example.uce.view.Informacoes
 import com.example.uce.view.TelasMotorista.TelaAddManutencao
-import com.example.uce.view.TelasAdm.TelaDoAdm
+import com.example.uce.view.TelasAdm.TelaManutencaoAdm
 import com.example.uce.view.TelasAdm.TelaGerarAviso
+import com.example.uce.view.TelasAdm.TelaIncialAdm
 import com.example.uce.view.TelasAdm.TelaManutencaoEscolhida
 import com.example.uce.view.TelasMotorista.TelaInicialCaminhoneiro
 import com.example.uce.view.TelasMotorista.TelaManutencao
@@ -54,7 +55,7 @@ fun Transgato() {
 
         NavHost(
             navController = navController,
-            startDestination = Destinos.telaGerarAviso.rota
+            startDestination = Destinos.telaLogin.rota
         ) {
             composable(Destinos.telaLogin.rota) {
                 telaLogin(
@@ -84,13 +85,6 @@ fun Transgato() {
                 )
             }
 
-            composable(Destinos.telaProprietario.rota) {
-                    TelaDoAdm(
-                    navController = navController,
-                    viewModel = mainViewModel
-                )
-            }
-
             composable(Destinos.telaAddManutencao.rota) {
                 TelaAddManutencao(
                     navController = navController,
@@ -105,7 +99,7 @@ fun Transgato() {
                 )
             }
 
-            composable (Destinos.telaManutencaoADM.rota) {
+            composable (Destinos.telaManutencaoEscolhida.rota) {
                 TelaManutencaoEscolhida(
                     navController = navController,
                     viewModel = mainViewModel
@@ -114,6 +108,18 @@ fun Transgato() {
 
             composable (Destinos.telaGerarAviso.rota) {
                 TelaGerarAviso(navController = navController,
+                    viewModel = mainViewModel
+                )
+            }
+
+            composable (Destinos.telaInicialAdm.rota) {
+                TelaIncialAdm(navController = navController,
+                    viewModel = mainViewModel)
+            }
+
+            composable(Destinos.telaManutencaoAdm.rota) {
+                TelaManutencaoAdm(
+                    navController = navController,
                     viewModel = mainViewModel
                 )
             }

@@ -57,7 +57,7 @@ fun telaLogin(
                 Toast.makeText(context, "Bem-vindo, ${state.usuario.nome}!", Toast.LENGTH_SHORT).show()
 
                 if (state.usuario.tipo == "admin") {
-                    navController.navigate(Destinos.telaProprietario.rota) {
+                    navController.navigate(Destinos.telaInicialAdm.rota) {
                         popUpTo(Destinos.telaLogin.rota) { inclusive = true }
                     }
                 } else {
