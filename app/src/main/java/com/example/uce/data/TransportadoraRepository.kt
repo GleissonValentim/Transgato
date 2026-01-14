@@ -22,17 +22,6 @@ class TransportadoraRepository{
 
     private val colecaoAvisos = db.collection("avisos")
 
-    suspend fun addCaminhoneiro(caminhoneiro: Caminhoneiro): Result<Unit> {
-        return try {
-            val docRef = colecaoCaminhoneiros.add(caminhoneiro).await()
-
-            docRef.update("id", docRef.id).await()
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
     suspend fun addCaminhao(caminhao: Caminhao): Result<Unit> {
         return try {
             val docRef = colecaoCaminhoes.add(caminhao).await()
@@ -139,6 +128,21 @@ class TransportadoraRepository{
         return try{
             val novoAviso = colecaoAvisos.add(aviso).await()
             novoAviso.update("id", novoAviso.id).await()
+            Result.success(Unit)
+        }catch (e: Exception){
+            Result.failure(e)
+        }
+    }
+
+    suspend fun addCaminhoneiro(caminhoneiro: Caminhoneiro): Result<Unit>{
+        return try{
+            val comando = colecaoCaminhoneiros.whereEqualTo("cpf", caminhoneiro.cpf).get().await()
+
+            if(!comando.isEmpty){
+               return Result.failure(Exception("CPF já cadastrado"))
+            }
+
+            colecaoCaminhoneiros.add(caminhoneiro).await()
             Result.success(Unit)
         }catch (e: Exception){
             Result.failure(e)

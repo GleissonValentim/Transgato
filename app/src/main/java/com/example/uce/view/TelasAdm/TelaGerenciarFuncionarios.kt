@@ -1,6 +1,5 @@
 package com.example.uce.view.TelasAdm
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +22,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -38,6 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.uce.navegation.Destinos
 import com.example.uce.viewmodel.MainViewModel
 
 @Composable
@@ -54,7 +53,6 @@ fun TelaGerenciarFuncionarios(viewModel: MainViewModel, navController: NavContro
             .fillMaxSize()
             .background(Color(0xFFF2F2F2))
     ) {
-        // Cabeçalho com "Voltar" à esquerda e Título centralizado
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -184,7 +182,7 @@ fun TelaGerenciarFuncionarios(viewModel: MainViewModel, navController: NavContro
 
 
                     Button(
-                        onClick = { /* Adicionar */ },
+                        onClick = { navController.navigate(Destinos.telaAdicionarMotorista.rota) },
                         modifier = Modifier
                             .align(Alignment.End)
                             .padding(24.dp)

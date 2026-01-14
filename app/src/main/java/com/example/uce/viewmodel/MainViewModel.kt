@@ -278,4 +278,21 @@ class MainViewModel : ViewModel() {
                 }
             }
         }
+
+    fun salvarCaminhoneiro(id: String, nome: String, cpf: String, cnh: String){
+        viewModelScope.launch {
+            val novoMotorista = Caminhoneiro(
+                id = id,
+                nome = nome,
+                cpf = cpf,
+                cnh = cnh
+            )
+            repository.addCaminhoneiro(novoMotorista)
+                .onSuccess {
+                    _statusMessage.value = "Motorista adicionado"
+                } .onFailure { exception ->
+                    _statusMessage.value = "Erro ao adicionar: " + exception.message
+                }
+        }
     }
+}
