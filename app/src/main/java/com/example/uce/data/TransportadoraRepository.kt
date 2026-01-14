@@ -66,7 +66,7 @@ class TransportadoraRepository{
 
     suspend fun getAllCaminhoneiros() : Result<List<Caminhoneiro>> {
         return try{
-            val snapshot = colecaoCaminhoneiros.get().await()
+            val snapshot = colecaoCaminhoneiros.whereNotEqualTo("cpf", "admin").get().await()
             val caminhoneiros = snapshot.toObjects(Caminhoneiro::class.java)
             Result.success(caminhoneiros)
         } catch (e : Exception){
@@ -145,7 +145,6 @@ class TransportadoraRepository{
         }
     }
 
-    // Note que agora a função retorna um ListenerRegistration
     fun getAvisoMaisRecente(onResult: (Aviso?) -> Unit): ListenerRegistration {
         return colecaoAvisos
             .orderBy("data", Query.Direction.DESCENDING)

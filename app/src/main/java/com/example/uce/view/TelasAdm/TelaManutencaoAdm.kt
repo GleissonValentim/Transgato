@@ -90,13 +90,12 @@ fun TelaManutencaoAdm(
                             fontSize = 18.sp,
                         )
                     )
-                } else {
+                }else{
                     LazyColumn(
                         modifier = Modifier.padding(bottom = 80.dp),
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
                     ) {
                         items(caminhoneiros) { cam ->
-                            if (cam.cpf != "admin") {
                                 Card(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -148,7 +147,6 @@ fun TelaManutencaoAdm(
                                         }
                                     }
                                 }
-                            }
                         }
                     }
                 }
