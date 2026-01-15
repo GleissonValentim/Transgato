@@ -1,5 +1,6 @@
 package com.example.uce.view.TelasAdm
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -22,10 +24,14 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -124,7 +130,7 @@ fun TelaGerenciarFuncionarios(viewModel: MainViewModel, navController: NavContro
                             modifier = Modifier.fillMaxSize(),
                             contentPadding = PaddingValues(vertical = 8.dp)
                         ) {
-                            items(caminhoneiros) { cami ->
+                            items(caminhoneiros, key = {it.cpf}) { cami ->
                                 Column {
                                     Row(
                                         modifier = Modifier
@@ -154,20 +160,47 @@ fun TelaGerenciarFuncionarios(viewModel: MainViewModel, navController: NavContro
                                                 color = Color.Blue,
                                                 fontSize = 16.sp,
                                                 modifier = Modifier
-                                                    .clickable { /* Editar */ }
+                                                    .clickable {
+                                                        val id = cami.id
+                                                        val cpf = cami.cpf
+                                                        val nome = Uri.encode(cami.nome)
+                                                        val cnh = cami.cnh
+
+                                                        navController.navigate("tela_editar/${cpf}/${nome}/${cnh}/${id}")
+                                                    }
                                                     .padding(8.dp)
                                             )
 
                                             Text(text = "|", color = Color.LightGray)
-
+                                            var mostrarAlerta = remember { mutableStateOf(false) }
                                             Text(
                                                 text = "Excluir",
                                                 color = Color.Red,
                                                 fontSize = 16.sp,
                                                 modifier = Modifier
-                                                    .clickable { /* Excluir */ }
+                                                    .clickable { mostrarAlerta.value = true }
                                                     .padding(8.dp)
                                             )
+
+                                            if (mostrarAlerta.value) {
+                                                AlertDialog(
+                                                    onDismissRequest = { mostrarAlerta.value = false },
+                                                    title = { Text("Apagar?") },
+                                                    text = { Text("Deseja excluir o motorista ${cami.nome}?") },
+                                                    confirmButton = {
+                                                        TextButton(onClick = {
+                                                            viewModel.deletarCaminhoneiro(cami.cpf)
+                                                            mostrarAlerta.value = false
+                                                        }) { Text(
+                                                            text = "Excluir",
+                                                            color = Color.Red) }
+                                                    },
+                                                    dismissButton = {
+                                                        TextButton(onClick = { mostrarAlerta.value = false }) { Text("Não") }
+                                                    }
+                                                )
+                                            }
+
                                         }
                                     }
                                     HorizontalDivider(
@@ -192,7 +225,9 @@ fun TelaGerenciarFuncionarios(viewModel: MainViewModel, navController: NavContro
                     ) {
                         Text("Adicionar", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     }
+
                 }
+
             }
         }
     }

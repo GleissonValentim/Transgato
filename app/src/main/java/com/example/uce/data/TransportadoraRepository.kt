@@ -134,21 +134,6 @@ class TransportadoraRepository{
         }
     }
 
-    suspend fun addCaminhoneiro(caminhoneiro: Caminhoneiro): Result<Unit>{
-        return try{
-            val comando = colecaoCaminhoneiros.whereEqualTo("cpf", caminhoneiro.cpf).get().await()
-
-            if(!comando.isEmpty){
-               return Result.failure(Exception("CPF já cadastrado"))
-            }
-
-            colecaoCaminhoneiros.add(caminhoneiro).await()
-            Result.success(Unit)
-        }catch (e: Exception){
-            Result.failure(e)
-        }
-    }
-
     fun getAvisoMaisRecente(onResult: (Aviso?) -> Unit): ListenerRegistration {
         return colecaoAvisos
             .orderBy("data", Query.Direction.DESCENDING)
@@ -162,4 +147,45 @@ class TransportadoraRepository{
                 onResult(aviso)
             }
     }
+
+    suspend fun addCaminhoneiro(caminhoneiro: Caminhoneiro): Result<Unit>{
+        return try{
+            val comando = colecaoCaminhoneiros.whereEqualTo("cpf", caminhoneiro.cpf).get().await()
+
+            if(!comando.isEmpty){
+               return Result.failure(Exception("CPF já cadastrado"))
+            }
+
+            colecaoCaminhoneiros.add(caminhoneiro).await()
+            Result.success(Unit)
+        }catch (e: Exception){
+            Result.failure(e)
+        }
+
+
+    }
+
+    suspend fun editarCaminhoneiro(attCaminhoneiro: Caminhoneiro): Result<Unit>{
+        return try {
+            val comando = colecaoCaminhoneiros.whereEqualTo("cpf", attCaminhoneiro.cpf).get().await()
+
+            colecaoCaminhoneiros.document(comando.documents.first().id).set(attCaminhoneiro).await()
+            Result.success(Unit)
+        }catch (e : Exception){
+            Result.failure(e)
+        }
+    }
+
+    suspend fun deletarCaminhoneiro(cpf: String): Result<Unit>{
+        return try {
+            val comando = colecaoCaminhoneiros.whereEqualTo("cpf", cpf).get().await()
+
+            colecaoCaminhoneiros.document(comando.first().id).delete().await()
+            Result.success(Unit)
+        }catch (e : Exception){
+            Result.failure(e)
+        }
+    }
+
+
 }

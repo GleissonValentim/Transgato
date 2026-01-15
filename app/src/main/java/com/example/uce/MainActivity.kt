@@ -11,16 +11,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-
+import androidx.navigation.navArgument
 
 
 import com.example.uce.navegation.Destinos
 import com.example.uce.ui.theme.UCETheme
 import com.example.uce.view.Informacoes
 import com.example.uce.view.TelasAdm.TelaAdicionarMotorista
+import com.example.uce.view.TelasAdm.TelaEditarMotorista
 import com.example.uce.view.TelasMotorista.TelaAddManutencao
 import com.example.uce.view.TelasAdm.TelaManutencaoAdm
 import com.example.uce.view.TelasAdm.TelaGerarAviso
@@ -145,6 +147,30 @@ fun Transgato() {
                 TelaAdicionarMotorista(
                     navController = navController,
                     viewModel = mainViewModel
+                )
+            }
+
+            composable(
+                route = Destinos.telaEditarMotorista.rota,
+                arguments = listOf(
+                    navArgument("cpf") { type = NavType.StringType },
+                    navArgument("nome") { type = NavType.StringType },
+                    navArgument("cnh") { type = NavType.StringType },
+                    navArgument("id") { type = NavType.StringType }
+                )
+            ) { entry ->
+                val cpf = entry.arguments?.getString("cpf") ?: ""
+                val nome = entry.arguments?.getString("nome") ?: ""
+                val cnh = entry.arguments?.getString("cnh") ?: ""
+                val id = entry.arguments?.getString("id") ?: ""
+
+                TelaEditarMotorista(
+                    navController = navController,
+                    viewModel = mainViewModel,
+                    cpfTela = cpf,
+                    nomeTela = nome,
+                    cnhTela = cnh,
+                    idTela = id
                 )
             }
         }

@@ -42,20 +42,24 @@ import com.example.uce.navegation.Destinos
 import com.example.uce.viewmodel.MainViewModel
 
 @Composable
-fun TelaAdicionarMotorista(navController: NavController, viewModel: MainViewModel){
-    var  nome by remember { mutableStateOf("") }
-    var cnh by remember { mutableStateOf("") }
-    var cpf by remember { mutableStateOf("") }
-    var id by remember { mutableStateOf("") }
+fun TelaEditarMotorista(navController: NavController, viewModel: MainViewModel,
+                        cpfTela: String,
+                        nomeTela: String,
+                        cnhTela: String,
+                        idTela: String){
+    var novoNome by remember { mutableStateOf(nomeTela) }
+    var novoCpf by remember { mutableStateOf(cpfTela) }
+    var novoCnh by remember { mutableStateOf(cnhTela) }
+    var novoId by remember { mutableStateOf(idTela) }
 
     val context = LocalContext.current
-    val statusMessage by viewModel.statusMessage.collectAsState()
+    val statusMesage by viewModel.statusMessage.collectAsState()
 
-    LaunchedEffect(statusMessage) {
-        statusMessage?.let {mensagem ->
+    LaunchedEffect(statusMesage) {
+        statusMesage?.let {mensagem ->
             Toast.makeText(context, mensagem, Toast.LENGTH_LONG).show()
             viewModel.onStatusMessageShown()
-            if (mensagem.contains("adicionado")){
+            if (mensagem.contains("editado")){
                 navController.popBackStack()
             }else if (mensagem.contains("Erro")){
 
@@ -63,18 +67,16 @@ fun TelaAdicionarMotorista(navController: NavController, viewModel: MainViewMode
         }
     }
 
-
     Column (
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF2F2F2))
+        modifier = Modifier.fillMaxSize()
+        .background(Color(0xFFF2F2F2))
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color(0xFF10182D))
                 .padding(24.dp)
-        ) {
+        ){
             Text(
                 text = "Voltar",
                 color = Color.White,
@@ -99,7 +101,7 @@ fun TelaAdicionarMotorista(navController: NavController, viewModel: MainViewMode
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Adicionar um Funcionário",
+            text = "Editar Funcionário ${nomeTela}",
             style = TextStyle(
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
@@ -115,58 +117,56 @@ fun TelaAdicionarMotorista(navController: NavController, viewModel: MainViewMode
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White),
             elevation = CardDefaults.cardElevation(2.dp)
-        ){
+        ) {
             Column (modifier = Modifier.padding(16.dp)) {
                 OutlinedTextField(
-                    value = nome,
-                    onValueChange = { nome = it },
-                    label = { Text("Nome do novo motorista...") },
+                    value = novoNome,
+                    onValueChange = { novoNome = it },
+                    label = { Text("Nome novo...") },
                     modifier = Modifier.fillMaxWidth()
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
 
                 OutlinedTextField(
-                    value = cpf,
-                    onValueChange = { cpf = it },
-                    label = { Text("CPF do novo motorista...") },
+                    value = novoCnh,
+                    onValueChange = { novoCnh = it },
+                    label = { Text("CNH nova...") },
                     modifier = Modifier.fillMaxWidth()
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
 
                 OutlinedTextField(
-                    value = cnh,
-                    onValueChange = { cnh = it },
-                    label = { Text("CNH do novo motorista...") },
+                    value = novoCpf,
+                    onValueChange = { novoCpf = it },
+                    label = { Text(novoCpf) },
+                    enabled = false,
                     modifier = Modifier.fillMaxWidth()
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
 
                 OutlinedTextField(
-                    value = id,
-                    onValueChange = { nId ->
-                        if(nId.length <= 4){
-                            id = nId
-                        }
-                    },
-                    label = { Text("ID do novo motorista...") },
+                    value = novoId,
+                    onValueChange = { novoId = it },
+                    label = { Text(novoId) },
+                    enabled = false,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            Row(
+            Row (
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
                 Button(
                     onClick = {
-                        if (nome.isNotBlank() && cpf.isNotBlank() && cnh.isNotBlank() && id.isNotBlank()) {
-                            viewModel.salvarCaminhoneiro(id, nome, cpf, cnh)
-                            navController.popBackStack()
+                        if (novoNome.isNotBlank() && novoCpf.isNotBlank() && novoCnh.isNotBlank() && novoId.isNotBlank()) {
+                            viewModel.editarCaminhoneiro(novoId, novoNome, novoCpf, novoCnh)
+                            navController.navigate(Destinos.telaGerenciarFuncionarios.rota)
                         } else {
                             Toast.makeText(context, "Preencha todos os campos", Toast.LENGTH_SHORT).show()
                         }
@@ -177,9 +177,10 @@ fun TelaAdicionarMotorista(navController: NavController, viewModel: MainViewMode
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF10182D))
                 ) {
-                    Text("Cadastrar", color = Color.White, fontWeight = FontWeight.Bold)
+                    Text("Editar motorista", color = Color.White, fontWeight = FontWeight.Bold)
                 }
             }
         }
     }
+
 }

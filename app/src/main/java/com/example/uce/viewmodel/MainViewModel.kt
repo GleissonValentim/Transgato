@@ -279,19 +279,49 @@ class MainViewModel : ViewModel() {
             }
         }
 
-    fun salvarCaminhoneiro(id: String, nome: String, cpf: String, cnh: String){
+    fun salvarCaminhoneiro(novoId: String, novoNome: String, novoCpf: String, novoCnh: String){
         viewModelScope.launch {
             val novoMotorista = Caminhoneiro(
-                id = id,
-                nome = nome,
-                cpf = cpf,
-                cnh = cnh
+                id = novoId,
+                nome = novoNome,
+                cpf = novoCpf,
+                cnh = novoCnh
             )
             repository.addCaminhoneiro(novoMotorista)
                 .onSuccess {
                     _statusMessage.value = "Motorista adicionado"
                 } .onFailure { exception ->
                     _statusMessage.value = "Erro ao adicionar: " + exception.message
+                }
+        }
+    }
+
+    fun editarCaminhoneiro(novoId: String, novoNome: String, novoCpf: String, novoCnh: String){
+        viewModelScope.launch {
+            val attMotorista = Caminhoneiro(
+                id = novoId,
+                nome = novoNome,
+                cpf = novoCpf,
+                cnh = novoCnh
+            )
+
+            repository.editarCaminhoneiro(attMotorista)
+                .onSuccess {
+                    _statusMessage.value = "Motorista ${novoNome} editado"
+                }.onFailure { exception ->
+                    _statusMessage.value = "Erro ao editar : " + exception.message
+                }
+        }
+    }
+
+    fun deletarCaminhoneiro(deleteCpf: String){
+        viewModelScope.launch {
+            repository.deletarCaminhoneiro(deleteCpf)
+                .onSuccess {
+                    _statusMessage.value = "Motorista deletado"
+                    carregarTodosCaminhoneiros()
+                }.onFailure { exception ->
+                    _statusMessage.value = "Erro ao editar " + exception.message
                 }
         }
     }

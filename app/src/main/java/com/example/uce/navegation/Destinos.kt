@@ -22,4 +22,6 @@ sealed class Destinos(val rota: String) {
     object telaGerenciarFuncionarios : Destinos("tela_gerenciar_funcionarios")
 
     object telaAdicionarMotorista : Destinos("tela_adicionar_motorista")
+
+    object telaEditarMotorista : Destinos("tela_editar/{cpf}/{nome}/{cnh}/{id}")
 }
