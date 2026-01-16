@@ -1,4 +1,4 @@
-package com.example.uce.view.TelasAdm
+package com.example.uce.view.TelasAdm.TelasGerenciarFuncionario
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -38,7 +38,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.uce.navegation.Destinos
 import com.example.uce.viewmodel.MainViewModel
 
 @Composable

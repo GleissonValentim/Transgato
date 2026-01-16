@@ -1,4 +1,4 @@
-package com.example.uce.view.TelasAdm
+package com.example.uce.view.TelasAdm.TelasManutencao
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

@@ -1,4 +1,4 @@
-package com.example.uce.view.TelasAdm
+package com.example.uce.view.TelasAdm.TelasAviso
 
 import android.widget.Toast
 import androidx.compose.foundation.background
