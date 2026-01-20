@@ -73,7 +73,7 @@ class MainViewModel : ViewModel() {
             result.onSuccess { caminhoneiro ->
                 if (caminhoneiro != null) {
 
-                    if (caminhoneiro.id != id) {
+                    if (caminhoneiro.id != id || caminhoneiro.cpf != cpf) {
                         _loginResult.value =
                             LoginResult.Error("ID ou CPF incorretos. Por favor, tente novamente.")
                         return@onSuccess
@@ -83,7 +83,7 @@ class MainViewModel : ViewModel() {
                     _loginResult.value = LoginResult.Success(caminhoneiro)
 
                     if (caminhoneiro.tipo == "motorista") {
-                        buscarCaminhaoEManutencoes(caminhoneiro.id)
+                        buscarCaminhaoEManutencoes(caminhoneiro.cpf)
                     }
                 } else {
                     _loginResult.value = LoginResult.Error("Usuário não encontrado.")
@@ -146,7 +146,7 @@ class MainViewModel : ViewModel() {
 
     fun carregarManutencoesDoCaminhaoLogado() {
         val caminhaoId = _caminhaoDoUsuario.value?.id
-        val userId = _usuarioLogado.value?.id
+        val userId = _usuarioLogado.value?.cpf
 
         if (caminhaoId != null && caminhaoId.isNotBlank()) {
             carregarManutencoes(caminhaoId)
@@ -164,7 +164,7 @@ class MainViewModel : ViewModel() {
 
             if (caminhaoIdAtual == null || caminhaoIdAtual.isBlank()) {
                 _statusMessage.value = "A confirmar dados do caminhão..."
-                val userId = _usuarioLogado.value?.id
+                val userId = _usuarioLogado.value?.cpf
                 if (userId == null) {
                     _statusMessage.value = "Erro fatal: Usuário desapareceu."
                     return@launch
@@ -222,7 +222,8 @@ class MainViewModel : ViewModel() {
     fun carregarAvisos() {
         viewModelScope.launch {
             val result = repository.getTodosAvisos()
-            result.onSuccess { lista -> _listaDeAvisos.value = lista }
+            result.onSuccess { lista -> _listaDeAvisos.value = lista
+            _avisoRecente.value = lista.firstOrNull()}
                 .onFailure { e -> _statusMessage.value = "Erro ao carregar: ${e.message}" }
         }
     }
@@ -259,6 +260,18 @@ class MainViewModel : ViewModel() {
             }
         }
 
+    fun deletarAviso(id: String){
+        viewModelScope.launch {
+            repository.deletarAviso(id)
+                .onSuccess {
+                    _statusMessage.value = "Aviso foi removido do quadro"
+                }
+                .onFailure { exception ->
+                    _statusMessage.value = "Não foi possivel remover este aviso " + exception.message
+                }
+        }
+    }
+
 
         //parte da tela do adm
 
@@ -267,7 +280,7 @@ class MainViewModel : ViewModel() {
             _listaDeManutencoes.value = emptyList()
 
             viewModelScope.launch {
-                val resultadoBusca = repository.getCaminhaoPorCaminhoneiroId(motorista.id)
+                val resultadoBusca = repository.getCaminhaoPorCaminhoneiroId(motorista.cpf)
 
                 resultadoBusca.onSuccess { caminhao ->
                     if (caminhao != null) {

@@ -115,7 +115,9 @@ fun telaLogin(
 
             OutlinedTextField(
                 value = id,
-                onValueChange = { id = it },
+                onValueChange = { Id -> if(Id.length <= 4){
+                    id = Id
+                } },
                 label = { Text("Digite o seu ID") },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = loginState != LoginResult.Loading

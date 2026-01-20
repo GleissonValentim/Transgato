@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -39,9 +41,10 @@ import java.util.Locale
 @Composable
 fun TelaGerenciarAvisos(viewModel: MainViewModel, navController: NavController) {
     val ultimoAviso by viewModel.avisoRecente.collectAsState()
+    val avisos by viewModel.listaDeAvisos.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.carregarAvisoRecente()
+        viewModel.carregarAvisos();
     }
 
     Column(
@@ -137,8 +140,55 @@ fun TelaGerenciarAvisos(viewModel: MainViewModel, navController: NavController) 
                 }
             }
         }
+        Spacer(modifier = Modifier.height(22.dp))
+        Card (
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .weight(1f),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(2.dp)
+        ){
+            LazyColumn (modifier = Modifier.fillMaxSize()){ items(avisos){ item ->
+                Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                        Text(
+                            text = item?.tituloAviso ?: "",
+                            style = TextStyle(
+                                fontSize = 17.sp,
+                                fontWeight = FontWeight.ExtraBold
+                            )
+                        )
+                        Text(
+                            text = item?.textoAviso ?: "",
+                            style = TextStyle(
+                                fontSize = 13.sp,
+                                color = Color.Gray,
+                                lineHeight = 22.sp
+                            )
+                        )
 
-        Spacer(modifier = Modifier.weight(1f))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            val formatado = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                            Text(
+                                text = item?.data.let { formatado.format(it) } ?: "",
+                                style = TextStyle(
+                                    fontSize = 10.sp,
+                                    color = Color.LightGray
+                                )
+                            )
+                        }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+            }
+            }
+        }
+
+       // Spacer(modifier = Modifier.weight(1f))
 
         Button(
             onClick = { navController.navigate(Destinos.telaGerarAviso.rota) },

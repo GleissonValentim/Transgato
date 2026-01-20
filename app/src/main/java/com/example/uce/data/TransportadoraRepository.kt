@@ -8,6 +8,7 @@ import com.example.uce.model.Manutencao
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.Source
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
@@ -116,7 +117,7 @@ class TransportadoraRepository{
 
     suspend fun getTodosAvisos(): Result<List<Aviso>>{
         return try{
-            val snapshot = colecaoAvisos.orderBy("data", Query.Direction.ASCENDING).get().await()
+            val snapshot = colecaoAvisos.orderBy("data", Query.Direction.DESCENDING).get().await()
             val listaDeAvisos = snapshot.toObjects(Aviso::class.java)
             Result.success(listaDeAvisos)
         } catch (e: Exception) {
@@ -130,6 +131,17 @@ class TransportadoraRepository{
             novoAviso.update("id", novoAviso.id).await()
             Result.success(Unit)
         }catch (e: Exception){
+            Result.failure(e)
+        }
+    }
+
+    suspend fun deletarAviso(id: String): Result<Unit>{
+        return try {
+            val comando = colecaoAvisos.whereEqualTo("id", id).get().await()
+
+            colecaoAvisos.document(comando.documents.first().id).delete().await()
+            Result.success(Unit)
+        }catch (e : Exception){
             Result.failure(e)
         }
     }

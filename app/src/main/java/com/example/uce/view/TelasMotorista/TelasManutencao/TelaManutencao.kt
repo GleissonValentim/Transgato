@@ -43,7 +43,6 @@ fun TelaManutencao(
     navController: NavController,
     viewModel: MainViewModel = viewModel()
 ) {
-
     val manutencoes by viewModel.listaDeManutencoes.collectAsState()
     val context = LocalContext.current
 

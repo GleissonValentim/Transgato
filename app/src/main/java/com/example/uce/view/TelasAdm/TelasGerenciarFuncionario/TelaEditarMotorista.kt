@@ -172,8 +172,8 @@ fun TelaEditarMotorista(navController: NavController, viewModel: MainViewModel,
                         }
                     },
                     modifier = Modifier
-                        .width(120.dp)
-                        .height(50.dp),
+                        .width(150.dp)
+                        .height(70.dp),
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF10182D))
                 ) {
