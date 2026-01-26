@@ -14,15 +14,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,6 +34,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -164,7 +169,9 @@ fun TelaGerenciarAvisos(viewModel: MainViewModel, navController: NavController) 
                                 fontSize = 13.sp,
                                 color = Color.Gray,
                                 lineHeight = 22.sp
-                            )
+                            ),
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
                         )
 
                         Row(
@@ -180,6 +187,51 @@ fun TelaGerenciarAvisos(viewModel: MainViewModel, navController: NavController) 
                                     color = Color.LightGray
                                 )
                             )
+
+                            Row (verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = "Editar",
+                                    modifier = Modifier
+                                        .clickable {
+                                            navController.navigate("tela_editar_aviso/${item.tituloAviso}/${item.textoAviso}/${item.data}/${item.id}")
+                                        }
+                                        .padding(8.dp),
+                                    color = Color(0xFF1976D2),
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                                Text(text = "|", color = Color.LightGray)
+                                var mostrarAlerta = remember { mutableStateOf(false) }
+                                Text(
+                                    text = "Excluir",
+                                    modifier = Modifier.clickable {
+                                        mostrarAlerta.value = true
+                                    }.padding(8.dp),
+                                    color = Color.Red,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+
+                                if (mostrarAlerta.value) {
+                                    AlertDialog(
+                                        onDismissRequest = { mostrarAlerta.value = false },
+                                        title = { Text("Apagar?") },
+                                        text = { Text("Deseja excluir o aviso de titulo ${item.tituloAviso}?") },
+                                        confirmButton = {
+                                            TextButton(onClick = {
+                                                viewModel.deletarAviso(item.id)
+                                                mostrarAlerta.value = false
+                                                navController.popBackStack()
+                                            }) { Text(
+                                                text = "Excluir",
+                                                color = Color.Red) }
+                                        },
+                                        dismissButton = {
+                                            TextButton(onClick = { mostrarAlerta.value = false }) { Text("Não") }
+                                        }
+                                    )
+                                }
+                            }
                         }
 
                     Spacer(modifier = Modifier.height(12.dp))

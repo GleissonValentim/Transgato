@@ -146,6 +146,17 @@ class TransportadoraRepository{
         }
     }
 
+    suspend fun editarAviso(attAviso: Aviso): Result<Unit>{
+        return try {
+            val comando = colecaoAvisos.whereEqualTo("id", attAviso.id).get().await()
+
+            colecaoAvisos.document(comando.documents.first().id).set(attAviso).await()
+            Result.success(Unit)
+        }catch (e : Exception){
+            Result.failure(e)
+        }
+    }
+
     fun getAvisoMaisRecente(onResult: (Aviso?) -> Unit): ListenerRegistration {
         return colecaoAvisos
             .orderBy("data", Query.Direction.DESCENDING)

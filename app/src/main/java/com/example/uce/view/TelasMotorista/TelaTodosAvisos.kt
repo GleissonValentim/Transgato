@@ -29,6 +29,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -88,7 +89,10 @@ fun TelaTodosAvisos(navController: NavController, viewModel: MainViewModel) {
                                     style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 17.sp)
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
-                                Text(text = aviso?.textoAviso ?: "Sem conteúdo")
+                                Text(text = aviso?.textoAviso ?: "Sem conteúdo",
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis
+                                )
 
                                 val formatado = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
                                 Text(

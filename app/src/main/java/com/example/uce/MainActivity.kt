@@ -29,6 +29,7 @@ import com.example.uce.view.TelasAdm.TelasAviso.TelaGerarAviso
 import com.example.uce.view.TelasAdm.TelasAviso.TelaGerenciarAvisos
 import com.example.uce.view.TelasAdm.TelasGerenciarFuncionario.TelaGerenciarFuncionarios
 import com.example.uce.view.TelasAdm.TelaIncialAdm
+import com.example.uce.view.TelasAdm.TelasAviso.TelaEditarAviso
 import com.example.uce.view.TelasAdm.TelasManutencao.TelaManutencaoEscolhida
 import com.example.uce.view.TelasMotorista.TelaInicialCaminhoneiro
 import com.example.uce.view.TelasMotorista.TelasManutencao.TelaManutencao
@@ -158,11 +159,11 @@ fun Transgato() {
                     navArgument("cnh") { type = NavType.StringType },
                     navArgument("id") { type = NavType.StringType }
                 )
-            ) { entry ->
-                val cpf = entry.arguments?.getString("cpf") ?: ""
-                val nome = entry.arguments?.getString("nome") ?: ""
-                val cnh = entry.arguments?.getString("cnh") ?: ""
-                val id = entry.arguments?.getString("id") ?: ""
+            ) { entrada ->
+                val cpf = entrada.arguments?.getString("cpf") ?: ""
+                val nome = entrada.arguments?.getString("nome") ?: ""
+                val cnh = entrada.arguments?.getString("cnh") ?: ""
+                val id = entrada.arguments?.getString("id") ?: ""
 
                 TelaEditarMotorista(
                     navController = navController,
@@ -170,6 +171,29 @@ fun Transgato() {
                     cpfTela = cpf,
                     nomeTela = nome,
                     cnhTela = cnh,
+                    idTela = id
+                )
+            }
+
+            composable (route = Destinos.telaEditarAviso.rota,
+                arguments = listOf(
+                    navArgument("titulo") { type = NavType.StringType },
+                    navArgument("texto") { type = NavType.StringType },
+                    navArgument("data") { type = NavType.LongType },
+                    navArgument("id") { type = NavType.StringType }
+                )
+            ) { entrada ->
+                val titulo = entrada.arguments?.getString("titulo") ?: ""
+                val texto = entrada.arguments?.getString("texto") ?: ""
+                val data = entrada.arguments?.getLong("data") ?: 0
+                val id = entrada.arguments?.getString("id") ?: ""
+
+                TelaEditarAviso(
+                    navController = navController,
+                    viewModel = mainViewModel,
+                    tituloTela = titulo,
+                    textoTela = texto,
+                    dataTela = data,
                     idTela = id
                 )
             }

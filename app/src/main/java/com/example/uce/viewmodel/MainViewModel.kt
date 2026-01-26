@@ -272,6 +272,20 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    fun editarAviso(novoTitulo : String, novoTexto : String, novaData : Long, novoId: String){
+        viewModelScope.launch {
+            val avisoAtt = Aviso(
+                id = novoId,
+                tituloAviso = novoTitulo,
+                textoAviso = novoTexto,
+                data = novaData
+            )
+
+            repository.editarAviso(avisoAtt).onSuccess { _statusMessage.value = "Aviso editado com sucesso!" }
+                .onFailure {exception -> _statusMessage.value = "Erro ao editar o aviso : " + exception}
+        }
+    }
+
 
         //parte da tela do adm
 

@@ -24,4 +24,6 @@ sealed class Destinos(val rota: String) {
     object telaAdicionarMotorista : Destinos("tela_adicionar_motorista")
 
     object telaEditarMotorista : Destinos("tela_editar/{cpf}/{nome}/{cnh}/{id}")
+
+    object  telaEditarAviso : Destinos("tela_editar_aviso/{titulo}/{texto}/{data}/{id}")
 }
